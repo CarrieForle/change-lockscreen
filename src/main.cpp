@@ -1,5 +1,5 @@
-#include "ChangeLockScreenDaemon.hpp"
-#include "ChangeLockScreenData.hpp"
+#include "ChangeLockscreenDaemon.hpp"
+#include "ChangeLockscreenData.hpp"
 #include <windows.h>
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdLine, int nCmdShow)

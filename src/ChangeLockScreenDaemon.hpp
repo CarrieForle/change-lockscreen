@@ -1,7 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_HPP
 #define CHANGE_LOCKSCREEN_HPP
 
-#include "ChangeLockScreenData.hpp"
+#include "ChangeLockscreenData.hpp"
 #include <string_view>
 #include <windows.h>
 
@@ -55,6 +55,6 @@ public:
     void changeLockscreen();
 };
 
-#include "ChangeLockScreenDaemon.cpp"
+#include "ChangeLockscreenDaemon.cpp"
 
 #endif
