@@ -31,9 +31,16 @@ struct ChangeLockScreenData
 
     {
         wchar_t *home_path;
-        GetEnvironmentVariable(L"USERPROFLE", home_path, 256);
+        if (!GetEnvironmentVariable(L"USERPROFLE", home_path, 256)) {
+            MessageBox(
+                NULL,
+                L"ERROR",
+                L"Failed to retrieve USERPROFILE environment variable. The program will exit.",
+                MB_OK
+            );
+        }
         root = std::filesystem::path(home_path) / LR"(Picture/slideshow_lockscreen)";
-        
+
         if (!std::filesystem::exists(root / last_file))
         {
             std::ofstream tmp{root / last_file};
