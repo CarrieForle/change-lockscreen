@@ -1,5 +1,5 @@
-#ifndef CHANGE_LOCK_SCREEN_HPP
-#define CHANGE_LOCK_SCREEN_HPP
+#ifndef CHANGE_LOCKSCREEN_HPP
+#define CHANGE_LOCKSCREEN_HPP
 
 #include "ChangeLockScreenData.hpp"
 #include <string_view>
@@ -44,7 +44,7 @@ protected:
     virtual const wchar_t *ClassName() const = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
     HWND main_hwnd;
-    ChangeLockScreenData data;
+    ChangeLockscreenData data;
     BOOL initialized = FALSE;
 };
 

@@ -1,5 +1,6 @@
-#include "ChangeLockScreenDaemon.hpp"
-#include "ChangeLockScreenData.hpp"
+#include "ErrorChangeLockscreen.hpp"
+#include "ChangeLockscreenDaemon.hpp"
+#include "ChangeLockscreenData.hpp"
 #include <format>
 #include <windows.h>
 #include <wtsapi32.h>
@@ -90,7 +91,7 @@ template <class T>
 void BaseChangelockscreenDaemon<T>::Initialize()
 {
 
-    data = ChangeLockScreenData(main_hwnd);
+    data = ChangeLockscreenData(main_hwnd);
 
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
     {
@@ -99,7 +100,7 @@ void BaseChangelockscreenDaemon<T>::Initialize()
             L"Failed to set up session disconnection detection. The program will exit.",
             L"Error",
             MB_OK);
-        PostQuitMessage(-2);
+        PostQuitMessage(ErrorChangeLockscreen::session_detection);
     }
 
     NOTIFYICONDATA notification_data = {};
@@ -246,7 +247,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str(),
             L"Error",
             MB_OK);
-        PostQuitMessage(-1);
+        PostQuitMessage(ErrorChangeLockscreen::read_last_file);
 
         return;
     }
@@ -266,7 +267,17 @@ void ChangeLockscreenDaemon::changeLockscreen()
     {
         last_number_file.close();
         last_number_file.open(last_number_file_path, std::ios::out);
-        last_number_file << new_contents.rdbuf();
+
+        if (last_number_file << new_contents.rdbuf())
+        {
+            MessageBox(
+                NULL,
+                std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
+                L"Error",
+                MB_OK);
+            PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
+            return;
+        }
     }
     else
     {
@@ -283,7 +294,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
                     std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
                     L"Error",
                     MB_OK);
-                PostQuitMessage(-1);
+                PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
                 return;
             }
             last_number_file.close();
@@ -295,7 +306,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
                 std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
                 L"Error",
                 MB_OK);
-            PostQuitMessage(-1);
+            PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
             // std::wcout << "Failed fo read next index from " << data.last_file << ". Lockscreen is not changed.\n";
             return;
         }
@@ -308,6 +319,6 @@ void ChangeLockscreenDaemon::changeLockscreen()
             std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str(),
             L"Error",
             MB_OK);
-        PostQuitMessage(-1);
+        PostQuitMessage(ErrorChangeLockscreen::copy_images);
     }
 }

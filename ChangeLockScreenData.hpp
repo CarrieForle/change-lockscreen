@@ -1,5 +1,5 @@
-#ifndef CHANGE_LOCK_SCREEN_DATA_HPP
-#define CHANGE_LOCK_SCREEN_DATA_HPP
+#ifndef CHANGE_LOCKSCREEN_DATA_HPP
+#define CHANGE_LOCKSCREEN_DATA_HPP
 
 #include <iostream>
 #include <cstdlib>
@@ -9,7 +9,7 @@
 #include <windows.h>
 #include <fstream>
 
-struct ChangeLockScreenData
+struct ChangeLockscreenData
 {
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
@@ -22,9 +22,9 @@ struct ChangeLockScreenData
     std::wstring ext;
     std::filesystem::path current_file;
 
-    ChangeLockScreenData() = default;
+    ChangeLockscreenData() = default;
 
-    ChangeLockScreenData(HWND& hwnd) : main_hwnd(hwnd), has_locked(false), tray_menu(CreatePopupMenu()),
+    ChangeLockscreenData(HWND& hwnd) : main_hwnd(hwnd), has_locked(false), tray_menu(CreatePopupMenu()),
                              random_gen(std::random_device{}()),
                              alignment(GetSystemMetrics(SM_MENUDROPALIGNMENT) == 0 ? TPM_LEFTALIGN : TPM_RIGHTALIGN),
                              last_file(L"last_file.txt"),
@@ -32,7 +32,7 @@ struct ChangeLockScreenData
                              current_file(L"current." + ext)
 
     {
-        
+
         char *home_path = std::getenv("HOMEPATH");
         if (home_path == NULL)
         {
@@ -64,7 +64,7 @@ struct ChangeLockScreenData
             }
         }
     }
-    ChangeLockScreenData(ChangeLockScreenData &) = delete;
+    ChangeLockscreenData(ChangeLockscreenData &) = delete;
 };
 
 #endif
