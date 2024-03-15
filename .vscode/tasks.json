@@ -6,10 +6,10 @@
             "label": "C/C++: g++.exe build active file",
             "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
             "args": [
-                "${workspaceFolder}\\main.cpp",
-                "${workspaceFolder}\\WindowsException.cpp",
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\WindowsException.cpp",
                 "-o",
-                "${workspaceFolder}\\main.exe",
+                "${workspaceFolder}\\out\\main.exe",
                 "-fdiagnostics-color=always",
                 "--std=c++23",
                 "-lwtsapi32",
