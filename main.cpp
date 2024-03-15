@@ -4,7 +4,7 @@
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdLine, int nCmdShow)
 {
-    FreeConsole();
+    // FreeConsole();
     /*
     How to create daemon CORRECTLY:
     1. Initialize a ChangeLockScreenDaemon instance. Call its Create()
@@ -19,7 +19,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
             L"Failed to build daemon. The program will exit.",
             L"Error",
             MB_OK);
-        PostQuitMessage(-1);
+        PostQuitMessage(ErrorChangeLockscreen::build_daemon);
     }
     daemon.Initialize();
 

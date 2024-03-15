@@ -8,7 +8,9 @@ enum ErrorChangeLockscreen
     write_last_file_update,
     write_last_file_new,
     copy_images,
-    session_detection
+    session_detection,
+    build_daemon,
+    retrieve_home_path
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
+#include "ErrorChangeLockscreen.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <filesystem>
@@ -33,6 +34,9 @@ struct ChangeLockscreenData
 
     {
 
+        // wchar_t *home_path;
+        // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
+
         char *home_path = std::getenv("HOMEPATH");
         if (home_path == NULL)
         {
@@ -42,11 +46,13 @@ struct ChangeLockscreenData
                 L"ERROR",
                 MB_OK
             );
+            PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);
         }
-        else {
-            std::wcout << L"\"HOMEPATH\" = " << home_path << L"\n";
-        }
-        root = std::filesystem::path(home_path) / R"(Picture/slideshow_lockscreen)";
+        // else {
+        //     std::wcout << L"\"HOMEPATH\" = " << home_path << L"\n";
+        // }
+
+        root = std::filesystem::path(home_path) / R"(Pictures/slideshow_lockscreen)";
 
         if (!std::filesystem::exists(root / last_file))
         {
@@ -64,6 +70,7 @@ struct ChangeLockscreenData
             }
         }
     }
+
     ChangeLockscreenData(ChangeLockscreenData &) = delete;
 };
 

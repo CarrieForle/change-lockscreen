@@ -268,7 +268,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         last_number_file.close();
         last_number_file.open(last_number_file_path, std::ios::out);
 
-        if (last_number_file << new_contents.rdbuf())
+        if (!(last_number_file << new_contents.rdbuf()))
         {
             MessageBox(
                 NULL,
