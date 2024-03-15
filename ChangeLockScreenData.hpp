@@ -31,11 +31,11 @@ struct ChangeLockScreenData
 
     {
         wchar_t *home_path;
-        if (!GetEnvironmentVariable(L"USERPROFLE", home_path, 256)) {
+        if (!GetEnvironmentVariable(L"%USERPROFILE%", home_path, 256)) {
             MessageBox(
                 NULL,
-                L"ERROR",
                 L"Failed to retrieve USERPROFILE environment variable. The program will exit.",
+                L"ERROR",
                 MB_OK
             );
         }
