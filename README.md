@@ -6,7 +6,7 @@ This repo is being tested and developed on Windows 11.
 ## Build
 
 ```powershell
-cd ChangeLockscreen
+cd change-lockscreen
 g++ main.cpp -o main.exe -fdiagnostics-color=always --std=c++23 -lwtsapi32 -lOle32 -municode
 ```
 
