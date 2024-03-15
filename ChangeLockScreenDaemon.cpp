@@ -1,5 +1,5 @@
 #include "ErrorChangeLockscreen.hpp"
-#include "helper_functions.hpp"
+#include "WindowsException.hpp"
 #include "ChangeLockscreenDaemon.hpp"
 #include "ChangeLockscreenData.hpp"
 #include <format>
@@ -71,10 +71,11 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
         GetModuleHandle(NULL),
         this);
 
-    if (!main_hwnd) {
+    if (!main_hwnd)
+    {
         // wchar_t* err_msg;
         // FormatMessage(
-        //     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY, 
+        //     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
         //     NULL, GetLastError(), 0, err_msg, 512, NULL);
         // std::wcout << err_msg << L"\n";
         MessageBox(
@@ -97,16 +98,9 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     notification_data.uVersion = NOTIFYICON_VERSION_4;
     notification_data.uCallbackMessage = WM_APP;
 
-    int r = 0;
-    try {
-        WindowsException::ThrowIf(!Shell_NotifyIcon(NIM_ADD, &notification_data));
-        WindowsException::ThrowIf(!Shell_NotifyIcon(NIM_SETVERSION, &notification_data));
-        Shell_NotifyIcon(NIM_SETFOCUS, &notification_data);
-    } catch(WindowsException& we) {
-        std::wcout << we.wwhat();
-    }
-
-    std::wcout << r << L"\n";
+    Shell_NotifyIcon(NIM_ADD, &notification_data);
+    Shell_NotifyIcon(NIM_SETVERSION, &notification_data);
+    Shell_NotifyIcon(NIM_SETFOCUS, &notification_data);
 
     data = ChangeLockscreenData(main_hwnd);
     SetMenu(main_hwnd, data.tray_menu);
@@ -237,8 +231,11 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         SetForegroundWindow(main_hwnd);
         switch (LOWORD(lParam))
         {
+        // On right click
         case WM_CONTEXTMENU:
         case NIN_KEYSELECT:
+
+        // On left click
         case NIN_SELECT:
         {
             POINT cursorPos;

@@ -7,7 +7,7 @@
             "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
             "args": [
                 "${workspaceFolder}\\main.cpp",
-                "${workspaceFolder}\\helper_functions.cpp",
+                "${workspaceFolder}\\WindowsException.cpp",
                 "-o",
                 "${workspaceFolder}\\main.exe",
                 "-fdiagnostics-color=always",
