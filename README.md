@@ -1,4 +1,4 @@
-# ChangeLockscreen
+# (WIP) ChangeLockscreen
 
 A Windows daemon to change lockscreen every time the computer is locked and start up.  
   
