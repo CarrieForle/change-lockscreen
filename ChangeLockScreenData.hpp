@@ -1,6 +1,8 @@
 #ifndef CHANGE_LOCK_SCREEN_DATA_HPP
 #define CHANGE_LOCK_SCREEN_DATA_HPP
 
+#include <iostream>
+#include <cstdlib>
 #include <filesystem>
 #include <vector>
 #include <random>
@@ -30,16 +32,21 @@ struct ChangeLockScreenData
                              current_file(L"current." + ext)
 
     {
-        wchar_t *home_path;
-        if (!GetEnvironmentVariable(L"%USERPROFILE%", home_path, 256)) {
+        
+        char *home_path = std::getenv("HOMEPATH");
+        if (home_path == NULL)
+        {
             MessageBox(
                 NULL,
-                L"Failed to retrieve USERPROFILE environment variable. The program will exit.",
+                L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.",
                 L"ERROR",
                 MB_OK
             );
         }
-        root = std::filesystem::path(home_path) / LR"(Picture/slideshow_lockscreen)";
+        else {
+            std::wcout << L"\"HOMEPATH\" = " << home_path << L"\n";
+        }
+        root = std::filesystem::path(home_path) / R"(Picture/slideshow_lockscreen)";
 
         if (!std::filesystem::exists(root / last_file))
         {

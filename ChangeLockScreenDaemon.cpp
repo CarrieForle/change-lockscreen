@@ -14,7 +14,7 @@
 #include <sstream>
 
 template <class T>
-LRESULT CALLBACK BaseChangeLockScreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK BaseChangelockscreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     T *daemon = nullptr;
 
@@ -42,7 +42,7 @@ LRESULT CALLBACK BaseChangeLockScreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg,
 }
 
 template <class DerivedType>
-BOOL BaseChangeLockScreenDaemon<DerivedType>::Create(
+BOOL BaseChangelockscreenDaemon<DerivedType>::Create(
     const wchar_t *lpWindowName,
     DWORD dwExStyle,
     int x,
@@ -75,19 +75,19 @@ BOOL BaseChangeLockScreenDaemon<DerivedType>::Create(
 }
 
 template <class T>
-constexpr BaseChangeLockScreenDaemon<T>::BaseChangeLockScreenDaemon() : main_hwnd(NULL) {}
+constexpr BaseChangelockscreenDaemon<T>::BaseChangelockscreenDaemon() : main_hwnd(NULL) {}
 
 template <class T>
-BaseChangeLockScreenDaemon<T>::~BaseChangeLockScreenDaemon()
+BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 {
     WTSUnRegisterSessionNotification(main_hwnd);
 }
 
 template <class T>
-constexpr HWND BaseChangeLockScreenDaemon<T>::Windows() { return main_hwnd; }
+constexpr HWND BaseChangelockscreenDaemon<T>::Windows() { return main_hwnd; }
 
 template <class T>
-void BaseChangeLockScreenDaemon<T>::Initialize()
+void BaseChangelockscreenDaemon<T>::Initialize()
 {
 
     data = ChangeLockScreenData(main_hwnd);
@@ -125,7 +125,7 @@ void BaseChangeLockScreenDaemon<T>::Initialize()
 }
 
 template <class T>
-int BaseChangeLockScreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int size)
+int BaseChangelockscreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int size)
 {
     std::vector<int> numbers(size + 1);
     numbers.push_back(0);
@@ -140,7 +140,7 @@ int BaseChangeLockScreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int
 }
 
 template <class T>
-bool BaseChangeLockScreenDaemon<T>::CopyFile(std::filesystem::path from_path, std::filesystem::path to_path)
+bool BaseChangelockscreenDaemon<T>::CopyFile(std::filesystem::path from_path, std::filesystem::path to_path)
 {
     std::ofstream out(to_path, std::ios::binary);
     std::ifstream in(from_path, std::ios::binary);
@@ -150,8 +150,8 @@ bool BaseChangeLockScreenDaemon<T>::CopyFile(std::filesystem::path from_path, st
     return out && in;
 }
 
-const wchar_t *ChangeLockScreenDaemon::ClassName() const { return L"Sample Window Class"; }
-LRESULT ChangeLockScreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+const wchar_t *ChangeLockscreenDaemon::ClassName() const { return L"Sample Window Class"; }
+LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
@@ -232,7 +232,7 @@ The last_file is a path to a file. The file stores 2 things.
    for lockscreen changes. (the remaining lines of the file)
 */
 
-void ChangeLockScreenDaemon::changeLockscreen()
+void ChangeLockscreenDaemon::changeLockscreen()
 {
     std::filesystem::path last_number_file_path{data.root / data.last_file};
     std::fstream last_number_file{last_number_file_path, std::ios::in};

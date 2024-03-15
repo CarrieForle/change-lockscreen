@@ -5,13 +5,13 @@
 #include <string_view>
 #include <windows.h>
 
-class ChangeLockScreenDaemon;
+class ChangeLockscreenDaemon;
 
 template <class T>
-class BaseChangeLockScreenDaemon;
+class BaseChangelockscreenDaemon;
 
 template <class DerivedType>
-class BaseChangeLockScreenDaemon
+class BaseChangelockscreenDaemon
 {
 public:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -24,10 +24,10 @@ public:
                 HWND hWndParent = NULL,
                 HMENU hMenu = NULL);
 
-    static inline ChangeLockScreenDaemon *GetChangeLockScreenDaemon(HWND hwnd)
+    static inline ChangeLockscreenDaemon *GetChangeLockScreenDaemon(HWND hwnd)
     {
         LONG_PTR data_ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        ChangeLockScreenDaemon *data = reinterpret_cast<ChangeLockScreenDaemon *>(data_ptr);
+        ChangeLockscreenDaemon *data = reinterpret_cast<ChangeLockscreenDaemon *>(data_ptr);
 
         return data;
     }
@@ -35,10 +35,10 @@ public:
     int WriteNewShuffle(std::fstream&, int);
     bool CopyFile(std::filesystem::path, std::filesystem::path);
 
-    constexpr BaseChangeLockScreenDaemon();
+    constexpr BaseChangelockscreenDaemon();
     constexpr HWND Windows();
     void Initialize();
-    ~BaseChangeLockScreenDaemon();
+    ~BaseChangelockscreenDaemon();
 
 protected:
     virtual const wchar_t *ClassName() const = 0;
@@ -48,7 +48,7 @@ protected:
     BOOL initialized = FALSE;
 };
 
-class ChangeLockScreenDaemon : public BaseChangeLockScreenDaemon<ChangeLockScreenDaemon>
+class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
 {
 public:
     virtual const wchar_t *ClassName() const;
