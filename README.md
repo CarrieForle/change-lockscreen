@@ -1,7 +1,8 @@
 # ChangeLockscreen
 
 A Windows daemon to change lockscreen every time the computer is locked and start up.  
-This repo is being tested and developed on Windows 11.
+This repo is being tested and developed on Windows 11.  
+Download [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) to contribute.  
 
 ## Build
 
