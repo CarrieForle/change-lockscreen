@@ -15,14 +15,13 @@ class BaseChangelockscreenDaemon
 {
 public:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    BOOL Create(const wchar_t *lpWindowName,
+    bool Create(const wchar_t *lpWindowName,
                 DWORD dwExStyle = 0,
-                int x = CW_USEDEFAULT,
-                int y = CW_USEDEFAULT,
-                int nWidth = CW_USEDEFAULT,
-                int nHeight = CW_USEDEFAULT,
-                HWND hWndParent = NULL,
-                HMENU hMenu = NULL);
+                int x = 0,
+                int y = 0,
+                int nWidth = 1,
+                int nHeight = 1,
+                HWND hWndParent = NULL);
 
     static inline ChangeLockscreenDaemon *GetChangeLockScreenDaemon(HWND hwnd)
     {

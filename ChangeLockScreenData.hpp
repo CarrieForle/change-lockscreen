@@ -37,6 +37,12 @@ struct ChangeLockscreenData
         // wchar_t *home_path;
         // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
 
+        AppendMenu(
+            tray_menu,
+            MF_ENABLED | MF_STRING,
+            0x1,
+            TEXT("Terminate"));
+
         char *home_path = std::getenv("HOMEPATH");
         if (home_path == NULL)
         {

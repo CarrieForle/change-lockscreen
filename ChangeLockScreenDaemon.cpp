@@ -1,4 +1,5 @@
 #include "ErrorChangeLockscreen.hpp"
+#include "helper_functions.hpp"
 #include "ChangeLockscreenDaemon.hpp"
 #include "ChangeLockscreenData.hpp"
 #include <format>
@@ -43,20 +44,18 @@ LRESULT CALLBACK BaseChangelockscreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg,
 }
 
 template <class DerivedType>
-BOOL BaseChangelockscreenDaemon<DerivedType>::Create(
+bool BaseChangelockscreenDaemon<DerivedType>::Create(
     const wchar_t *lpWindowName,
     DWORD dwExStyle,
     int x,
     int y,
     int width,
     int height,
-    HWND hwnd_parent,
-    HMENU hMenu)
+    HWND hwnd_parent)
 {
     WNDCLASS wc = {};
-
     wc.lpfnWndProc = DerivedType::WindowProc;
-    wc.hInstance = GetModuleHandle(NULL); // get handle of current instance (EXE)
+    wc.hInstance = GetModuleHandle(NULL); // get the handle of current instance (EXE)
     wc.lpszClassName = ClassName();
 
     RegisterClass(&wc);
@@ -68,11 +67,61 @@ BOOL BaseChangelockscreenDaemon<DerivedType>::Create(
         WS_DISABLED,
         x, y, width, height,
         hwnd_parent,
-        hMenu,
+        NULL,
         GetModuleHandle(NULL),
         this);
 
-    return main_hwnd ? TRUE : FALSE;
+    if (!main_hwnd) {
+        // wchar_t* err_msg;
+        // FormatMessage(
+        //     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY, 
+        //     NULL, GetLastError(), 0, err_msg, 512, NULL);
+        // std::wcout << err_msg << L"\n";
+        MessageBox(
+            NULL,
+            L"Failed to build daemon. The program will exit.",
+            L"Error",
+            MB_OK);
+        PostQuitMessage(ErrorChangeLockscreen::build_daemon);
+
+        return false;
+    }
+
+    NOTIFYICONDATA notification_data = {};
+    notification_data.cbSize = sizeof(notification_data);
+    notification_data.hWnd = main_hwnd;
+    notification_data.uID = 0;
+    notification_data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP;
+    notification_data.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wcscpy(notification_data.szTip, L"CF Lockscreen");
+    notification_data.uVersion = NOTIFYICON_VERSION_4;
+    notification_data.uCallbackMessage = WM_APP;
+
+    int r = 0;
+    try {
+        WindowsException::ThrowIf(!Shell_NotifyIcon(NIM_ADD, &notification_data));
+        WindowsException::ThrowIf(!Shell_NotifyIcon(NIM_SETVERSION, &notification_data));
+        Shell_NotifyIcon(NIM_SETFOCUS, &notification_data);
+    } catch(WindowsException& we) {
+        std::wcout << we.wwhat();
+    }
+
+    std::wcout << r << L"\n";
+
+    data = ChangeLockscreenData(main_hwnd);
+    SetMenu(main_hwnd, data.tray_menu);
+
+    if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
+    {
+        MessageBox(
+            main_hwnd,
+            L"Failed to set up session disconnection detection. The program will exit.",
+            L"Error",
+            MB_OK);
+        PostQuitMessage(ErrorChangeLockscreen::session_detection);
+    }
+
+    return true;
 }
 
 template <class T>
@@ -90,7 +139,6 @@ constexpr HWND BaseChangelockscreenDaemon<T>::Windows() { return main_hwnd; }
 template <class T>
 void BaseChangelockscreenDaemon<T>::Initialize()
 {
-
     data = ChangeLockscreenData(main_hwnd);
 
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
@@ -199,7 +247,7 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
                 data.tray_menu,
                 data.alignment | TPM_BOTTOMALIGN |
                     TPM_RETURNCMD | TPM_LEFTBUTTON |
-                    TPM_NOANIMATION | TPM_RETURNCMD,
+                    TPM_NOANIMATION,
                 // GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam),
                 (int)(cursorPos.x), (int)(cursorPos.y),
                 0,

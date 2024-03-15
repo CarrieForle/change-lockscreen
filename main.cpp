@@ -12,16 +12,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
     */
 
     ChangeLockscreenDaemon daemon;
-    if (!daemon.Create(L"CF Lockscreen image changer"))
-    {
-        MessageBox(
-            NULL,
-            L"Failed to build daemon. The program will exit.",
-            L"Error",
-            MB_OK);
-        PostQuitMessage(ErrorChangeLockscreen::build_daemon);
+    if (!daemon.Create(L"CF Lockscreen image changer")) {
+        return ErrorChangeLockscreen::build_daemon;
     }
-    daemon.Initialize();
 
     MSG msg = {};
 
