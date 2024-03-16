@@ -15,19 +15,13 @@ struct ChangeLockscreenData
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
     bool has_locked;
-    HWND main_hwnd;
-    HMENU tray_menu;
-    UINT alignment;
     std::filesystem::path root;
     std::filesystem::path last_file;
     std::wstring ext;
     std::filesystem::path current_file;
 
-    ChangeLockscreenData() = default;
-
-    ChangeLockscreenData(HWND& hwnd) : main_hwnd(hwnd), has_locked(false), tray_menu(CreatePopupMenu()),
+    ChangeLockscreenData() : has_locked(false),
                              random_gen(std::random_device{}()),
-                             alignment(GetSystemMetrics(SM_MENUDROPALIGNMENT) == 0 ? TPM_LEFTALIGN : TPM_RIGHTALIGN),
                              last_file(L"last_file.txt"),
                              ext(L"png"),
                              current_file(L"current." + ext)
@@ -37,19 +31,13 @@ struct ChangeLockscreenData
         // wchar_t *home_path;
         // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
 
-        AppendMenu(
-            tray_menu,
-            MF_ENABLED | MF_STRING,
-            0x1,
-            TEXT("Terminate"));
-
         char *home_path = std::getenv("HOMEPATH");
         if (home_path == NULL)
         {
             MessageBox(
                 NULL,
                 L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.",
-                L"ERROR",
+                L"CF Lockscreen Error",
                 MB_OK
             );
             PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);

@@ -36,17 +36,18 @@ public:
     int WriteNewShuffle(std::fstream&, int);
     bool CopyFile(std::filesystem::path, std::filesystem::path);
 
-    constexpr BaseChangelockscreenDaemon();
+    BaseChangelockscreenDaemon() = default;
     constexpr HWND Windows();
     void Initialize();
     virtual ~BaseChangelockscreenDaemon();
+    Log<wchar_t> logger = std::filesystem::path{"log.txt"};
 
 protected:
     virtual const wchar_t *ClassName() const = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
-    HWND main_hwnd;
+    HWND main_hwnd = NULL;
+    HMENU tray_menu = CreatePopupMenu();
     ChangeLockscreenData data;
-    bool initialized = false;
 };
 
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
@@ -55,7 +56,6 @@ public:
     virtual const wchar_t *ClassName() const;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     void changeLockscreen();
-    Log<wchar_t> logger{std::wcout};
 };
 
 #include "ChangeLockscreenDaemon.cpp"

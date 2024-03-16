@@ -81,7 +81,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
         MessageBox(
             NULL,
             L"Failed to build daemon. The program will exit.",
-            L"Error",
+            L"CF Lockscreen Error",
             MB_OK);
         PostQuitMessage(ErrorChangeLockscreen::build_daemon);
 
@@ -94,7 +94,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     notification_data.uID = 0;
     notification_data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP;
     notification_data.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wcscpy(notification_data.szTip, L"CF Lockscreen");
+    wcscpy(notification_data.szTip, L"CF Lockscreen Daemon");
     notification_data.uVersion = NOTIFYICON_VERSION_4;
     notification_data.uCallbackMessage = WM_APP;
 
@@ -102,24 +102,26 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     Shell_NotifyIcon(NIM_SETVERSION, &notification_data);
     Shell_NotifyIcon(NIM_SETFOCUS, &notification_data);
 
-    data = ChangeLockscreenData(main_hwnd);
-    SetMenu(main_hwnd, data.tray_menu);
+    AppendMenu(
+        tray_menu,
+        MF_STRING | MF_ENABLED,
+        0x1,
+        L"Exit");
+
+    SetMenu(main_hwnd, tray_menu);
 
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
     {
         MessageBox(
             main_hwnd,
             L"Failed to set up session disconnection detection. The program will exit.",
-            L"Error",
+            L"CF Lockscreen Error",
             MB_OK);
         PostQuitMessage(ErrorChangeLockscreen::session_detection);
     }
 
     return true;
 }
-
-template <class T>
-constexpr BaseChangelockscreenDaemon<T>::BaseChangelockscreenDaemon() : main_hwnd(NULL) {}
 
 template <class T>
 BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
@@ -129,47 +131,6 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 
 template <class T>
 constexpr HWND BaseChangelockscreenDaemon<T>::Windows() { return main_hwnd; }
-
-template <class T>
-void BaseChangelockscreenDaemon<T>::Initialize()
-{
-    if (initialized)
-        return;
-    data = ChangeLockscreenData(main_hwnd);
-
-    if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
-    {
-        MessageBox(
-            main_hwnd,
-            L"Failed to set up session disconnection detection. The program will exit.",
-            L"Error",
-            MB_OK);
-        PostQuitMessage(ErrorChangeLockscreen::session_detection);
-    }
-
-    NOTIFYICONDATA notification_data = {};
-    notification_data.cbSize = sizeof(notification_data);
-    notification_data.hWnd = main_hwnd;
-    notification_data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP | NIF_GUID;
-    notification_data.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wcscpy(notification_data.szTip, L"CF Lockscreen image changer");
-    notification_data.uVersion = NOTIFYICON_VERSION_4;
-    CoCreateGuid(&notification_data.guidItem);
-    notification_data.uCallbackMessage = WM_APP;
-
-    Shell_NotifyIcon(NIM_ADD, &notification_data);
-    Shell_NotifyIcon(NIM_SETVERSION, &notification_data);
-
-    AppendMenu(
-        data.tray_menu,
-        MF_ENABLED | MF_STRING,
-        0x1,
-        TEXT("Terminate"));
-
-    SetMenu(main_hwnd, data.tray_menu);
-
-    initialized = true;
-}
 
 template <class T>
 int BaseChangelockscreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int size)
@@ -205,7 +166,7 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         switch (wParam)
         {
         case WTS_SESSION_LOCK:
-            logger.log(L"Screen locked\n");
+            logger.log(L"Computer locked");
             data.has_locked = true;
 
             return 0;
@@ -247,12 +208,12 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
             break;
         case WM_CONTEXTMENU: // On right click
         case NIN_KEYSELECT:
-        {
+            std::wcout << L"Right click\n";
             POINT cursorPos;
             GetCursorPos(&cursorPos);
             switch (TrackPopupMenu(
-                data.tray_menu,
-                data.alignment | TPM_BOTTOMALIGN |
+                tray_menu,
+                (GetSystemMetrics(SM_MENUDROPALIGNMENT) == 0 ? TPM_LEFTALIGN : TPM_RIGHTALIGN) | TPM_BOTTOMALIGN |
                     TPM_RETURNCMD | TPM_LEFTBUTTON |
                     TPM_NOANIMATION,
                 // GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam),
@@ -266,10 +227,12 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
             case 0:
                 return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
             }
-        }
+
+            break;
         default:
             return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
         }
+
         return 0;
 
     default:
@@ -300,7 +263,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         MessageBox(
             NULL,
             std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-            L"Error",
+            L"CF Lockscreen Error",
             MB_OK);
         PostQuitMessage(ErrorChangeLockscreen::read_last_file);
 
@@ -328,7 +291,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             MessageBox(
                 NULL,
                 std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                L"Error",
+                L"CF Lockscreen Error",
                 MB_OK);
             PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
             return;
@@ -348,7 +311,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
                 MessageBox(
                     NULL,
                     std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                    L"Error",
+                    L"CF Lockscreen Error",
                     MB_OK);
                 PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
                 return;
@@ -360,7 +323,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             MessageBox(
                 NULL,
                 std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                L"Error",
+                L"CF Lockscreen Error",
                 MB_OK);
             PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
             // std::wcout << "Failed fo read next index from " << data.last_file << ". Lockscreen is not changed.\n";
@@ -373,7 +336,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         MessageBox(
             NULL,
             std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str(),
-            L"Error",
+            L"CF Lockscreen Error",
             MB_OK);
         PostQuitMessage(ErrorChangeLockscreen::copy_images);
     }
