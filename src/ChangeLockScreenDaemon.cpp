@@ -133,6 +133,8 @@ constexpr HWND BaseChangelockscreenDaemon<T>::Windows() { return main_hwnd; }
 template <class T>
 void BaseChangelockscreenDaemon<T>::Initialize()
 {
+    if (initialized)
+        return;
     data = ChangeLockscreenData(main_hwnd);
 
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
@@ -165,6 +167,8 @@ void BaseChangelockscreenDaemon<T>::Initialize()
         TEXT("Terminate"));
 
     SetMenu(main_hwnd, data.tray_menu);
+
+    initialized = true;
 }
 
 template <class T>
@@ -177,7 +181,6 @@ int BaseChangelockscreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int
     std::shuffle(numbers.begin() + 1, numbers.end(), data.random_gen);
 
     std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int>(out_stream, "\n"));
-    std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int, wchar_t>(std::wcout, L"\n"));
 
     return numbers[1];
 }
@@ -202,19 +205,19 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         switch (wParam)
         {
         case WTS_SESSION_LOCK:
-            std::wcout << L"Screen locked\n";
+            logger.log(L"Screen locked\n");
             data.has_locked = true;
 
-            return 1;
+            return 0;
         case WTS_SESSION_UNLOCK:
             if (data.has_locked)
             {
                 changeLockscreen();
-                std::wcout << L"Image changed on unlocked\n";
+                logger.log(L"Image changed on unlocked\n");
                 data.has_locked = false;
             }
 
-            return 1;
+            return 0;
         default:
             return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
         }
@@ -231,12 +234,19 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         SetForegroundWindow(main_hwnd);
         switch (LOWORD(lParam))
         {
-        // On right click
-        case WM_CONTEXTMENU:
-        case NIN_KEYSELECT:
+        case NIN_SELECT: // On left click
+            if (GetConsoleWindow())
+            {
+                FreeConsole();
+            }
+            else
+            {
+                AllocConsole();
+            }
 
-        // On left click
-        case NIN_SELECT:
+            break;
+        case WM_CONTEXTMENU: // On right click
+        case NIN_KEYSELECT:
         {
             POINT cursorPos;
             GetCursorPos(&cursorPos);
@@ -260,7 +270,7 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         default:
             return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
         }
-        return 2;
+        return 0;
 
     default:
         return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
@@ -326,9 +336,10 @@ void ChangeLockscreenDaemon::changeLockscreen()
     }
     else
     {
+        last_number_file.ignore(128, '\n');
         if (last_number_file.eof())
         {
-            std::wcout << "EOF. Constructing new random sequence.\n";
+            logger.log(L"EOF. Constructing new random sequence.\n");
             last_number_file.close();
             last_number_file.open(last_number_file_path, std::ios::out);
             rolled_number = WriteNewShuffle(last_number_file, data.files.size());

@@ -1,21 +1,57 @@
 #ifndef HELPER_FUNCTIONS
 #define HELPER_FUNCTIONS
 
+#include <cstdlib>
+#include <iostream>
 #include <exception>
 #include <windows.h>
 
-class WindowsException : public std::exception {
+class WindowsException : public std::exception
+{
 public:
-    static void ThrowIf(bool);
-    static constexpr void ThrowIfNot(bool);
-    WindowsException(DWORD);
-    ~WindowsException();
-    char *what();
-    wchar_t *wwhat();
+    static constexpr void ThrowIf(const bool condition)
+    {
+        if (condition)
+        {
+            throw WindowsException(GetLastError());
+        }
+    }
+
+    static constexpr void ThrowIfNot(const bool condition)
+    {
+        WindowsException::ThrowIf(!condition);
+    }
+    WindowsException(const DWORD error)
+    {
+        if (!FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                NULL,
+                error,
+                0,
+                (wchar_t *)&wmessage,
+                0, NULL))
+        {
+            wcscpy(wmessage, L"Failed to retrieve error.");
+            strcpy(message, "Failed to retrieve error.");
+        }
+        else {
+            size_t size = std::wcstombs(message, wmessage, 512);
+            if (size == 512) {
+                message[511] = 0;
+            }
+        }
+    }
+
+    virtual constexpr ~WindowsException() { LocalFree(wmessage); }
+
+    // message is truncated to 511 characters of wmessage. Use wwhat() if possible.
+    const char *what() const noexcept override { return message; }
+    constexpr wchar_t *wwhat() { return wmessage; }
 
 private:
     DWORD error;
-    wchar_t *message;
+    char message[512];
+    wchar_t *wmessage;
 };
 
 #endif

@@ -1,20 +1,19 @@
 #include "ChangeLockscreenDaemon.hpp"
 #include "ChangeLockscreenData.hpp"
+#include "Log.hpp"
 #include <windows.h>
+#include <iostream>
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdLine, int nCmdShow)
 {
-    // FreeConsole();
-    /*
-    How to create daemon CORRECTLY:
-    1. Initialize a ChangeLockScreenDaemon instance. Call its Create()
-    2. Call ChangeLockScreenDaemon.Initialize()
-    */
+    FreeConsole();
 
     ChangeLockscreenDaemon daemon;
     if (!daemon.Create(L"CF Lockscreen image changer")) {
         return ErrorChangeLockscreen::build_daemon;
     }
+
+    daemon.logger.log(L"Initialized\n");
 
     MSG msg = {};
 

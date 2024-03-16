@@ -1,6 +1,8 @@
 #ifndef CHANGE_LOCKSCREEN_HPP
 #define CHANGE_LOCKSCREEN_HPP
 
+#include <iostream>
+#include "Log.hpp"
 #include "ChangeLockscreenData.hpp"
 #include <string_view>
 #include <windows.h>
@@ -37,14 +39,14 @@ public:
     constexpr BaseChangelockscreenDaemon();
     constexpr HWND Windows();
     void Initialize();
-    ~BaseChangelockscreenDaemon();
+    virtual ~BaseChangelockscreenDaemon();
 
 protected:
     virtual const wchar_t *ClassName() const = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
     HWND main_hwnd;
     ChangeLockscreenData data;
-    BOOL initialized = FALSE;
+    bool initialized = false;
 };
 
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
@@ -53,6 +55,7 @@ public:
     virtual const wchar_t *ClassName() const;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     void changeLockscreen();
+    Log<wchar_t> logger{std::wcout};
 };
 
 #include "ChangeLockscreenDaemon.cpp"

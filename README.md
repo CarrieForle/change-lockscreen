@@ -14,5 +14,5 @@ g++ main.cpp -o main.exe -fdiagnostics-color=always --std=c++23 -lwtsapi32 -lOle
 
 ## Run
 ```powershell
-run
+.\run
 ```
