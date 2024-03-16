@@ -13,14 +13,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
         return ErrorChangeLockscreen::build_daemon;
     }
 
-    daemon.logger.log(L"Initialized\n");
+    daemon.logger.log(false, true, L"Initialized");
 
     MSG msg = {};
 
     daemon.changeLockscreen();
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
-        // printf("%d, %d, %d, %d\n", bRet, msg.message, msg.wParam, msg.lParam);
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

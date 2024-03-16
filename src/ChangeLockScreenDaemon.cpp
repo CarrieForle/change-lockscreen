@@ -174,7 +174,7 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
             if (data.has_locked)
             {
                 changeLockscreen();
-                logger.log(L"Image changed on unlocked\n");
+                logger.log(L"Image changed on unlocked");
                 data.has_locked = false;
             }
 
@@ -245,10 +245,10 @@ It works by using data.files (vector<std::filesystem::path>),
 which stores the paths of image files in root directory.
 The index of each path identifies each image files.
 
-The last_file is a path to a file. The file stores 2 things.
-1. The index of the current lockscreen  (at the first line of the file)
+The last_file stores 2 things.
+1. The index of the current lockscreen file (at the first line of the file)
 2. The order of index (which identifies contents of data.files)
-   for lockscreen changes. (the remaining lines of the file)
+   for lockscreen changes (at the remaining lines of the file).
 */
 
 void ChangeLockscreenDaemon::changeLockscreen()
@@ -302,7 +302,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         last_number_file.ignore(128, '\n');
         if (last_number_file.eof())
         {
-            logger.log(L"EOF. Constructing new random sequence.\n");
+            logger.log(L"EOF. Constructing new random sequence.");
             last_number_file.close();
             last_number_file.open(last_number_file_path, std::ios::out);
             rolled_number = WriteNewShuffle(last_number_file, data.files.size());
