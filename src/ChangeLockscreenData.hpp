@@ -43,9 +43,6 @@ struct ChangeLockscreenData
             );
             PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);
         }
-        // else {
-        //     std::wcout << L"\"HOMEPATH\" = " << home_path << L"\n";
-        // }
 
         root = std::filesystem::path(home_path) / R"(Pictures/slideshow_lockscreen)";
 

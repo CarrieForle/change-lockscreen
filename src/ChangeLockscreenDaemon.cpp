@@ -3,18 +3,17 @@
 #include "WindowsException.hpp"
 #include "ChangeLockscreenDaemon.hpp"
 #include "ChangeLockscreenData.hpp"
-#include <format>
+#include <cstdlib>
 #include <windows.h>
 #include <wtsapi32.h>
 #include <string>
+#include <memory>
+#include <format>
 #include <random>
-#include <fstream>
 #include <filesystem>
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include <iostream>
-#include <sstream>
 
 template <class T>
 LRESULT CALLBACK BaseChangelockscreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -257,11 +256,16 @@ void ChangeLockscreenDaemon::changeLockscreen()
     int rolled_number = 0;
     if (!last_number_file)
     {
+        wchar_t err_msg[256];
+        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str());
+
         MessageBox(
             NULL,
-            std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str(),
+            err_msg,
             ErrorMessageBox::universal,
             MB_OK);
+
+        logger.log(err_msg);
         PostQuitMessage(ErrorChangeLockscreen::read_last_file);
 
         return;
@@ -285,9 +289,12 @@ void ChangeLockscreenDaemon::changeLockscreen()
 
         if (!(last_number_file << new_contents.rdbuf()))
         {
+            wchar_t err_msg[256];
+            std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
+
             MessageBox(
                 NULL,
-                std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
+                err_msg,
                 ErrorMessageBox::universal,
                 MB_OK);
             PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
@@ -305,7 +312,8 @@ void ChangeLockscreenDaemon::changeLockscreen()
             rolled_number = WriteNewShuffle(last_number_file, data.files.size());
             if (!last_number_file)
             {
-                const wchar_t *err_msg = std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str();
+                wchar_t err_msg[256];
+                std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
 
                 MessageBox(
                     NULL,
@@ -323,7 +331,8 @@ void ChangeLockscreenDaemon::changeLockscreen()
         }
         else
         {
-            const wchar_t *err_msg = std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str();
+            wchar_t err_msg[256];
+            std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
 
             MessageBox(
                 NULL,
@@ -340,7 +349,8 @@ void ChangeLockscreenDaemon::changeLockscreen()
 
     if (!CopyFile(data.files[rolled_number], data.root / data.current_file))
     {
-        const wchar_t *err_msg = std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str();
+        wchar_t err_msg[256];
+        std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str());
 
         MessageBox(
             NULL,
