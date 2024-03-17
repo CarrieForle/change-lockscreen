@@ -2,7 +2,7 @@
 
 A Windows daemon to change lockscreen every time the computer is locked and start up.  
   
-This repo is being tested and developed on Windows 11 64 bit with MinGW.  
+This repo is being tested and developed on Windows 11 64 bit with [winlibs MinGW-w64](https://github.com/brechtsanders/winlibs_mingw).  
 Download [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/) to contribute.  
 
 ## Build
