@@ -300,6 +300,8 @@ void ChangeLockscreenDaemon::changeLockscreen()
             PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
             return;
         }
+
+        last_number_file.close();
     }
     else
     {
@@ -360,5 +362,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
 
         logger.log(err_msg);
         PostQuitMessage(ErrorChangeLockscreen::copy_images);
+    } else {
+        logger.log(L"Lockscreen updated to index {}: \"{}\"", rolled_number, data.files[rolled_number].wstring());
     }
 }

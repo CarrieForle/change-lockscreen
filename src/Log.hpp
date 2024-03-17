@@ -31,66 +31,28 @@ public:
     }
 
     // TO-DO: use std::print() after available
-
-    template <class... Args>
-    void log(bool is_showtime, bool is_add_newline, std::wformat_string<std::type_identity_t<Args>...> fmt, Args &&...args)
-    {
-        if (is_showtime)
-        {
-            using namespace std::chrono;
-            time_t current_time = system_clock::to_time_t(system_clock::now());
-
-            // TO-DO: Make it std::chrono only when available.
-            *log_stream << std::put_time(std::localtime(&current_time), time_format);
-        }
-
-        *log_stream << std::format(fmt, std::forward<Args>(args)...);
-
-        if (is_add_newline)
-        {
-            *log_stream << '\n';
-        }
-    }
-
-    template <class... Args>
-    void log(bool is_add_newline, std::wformat_string<std::type_identity_t<Args>...> fmt, Args &&...args)
-    {
-        log(true, is_add_newline, fmt, std::forward<Args>(args)...);
-    }
-
     template <class... Args>
     void log(std::wformat_string<std::type_identity_t<Args>...> fmt, Args &&...args)
     {
-        log(true, true, fmt, std::forward<Args>(args)...);
-    }
+        using namespace std::chrono;
+        time_t current_time = system_clock::to_time_t(system_clock::now());
 
-    constexpr void log(bool is_showtime, bool is_add_newline, std::wstring_view str)
-    {
-        if (is_showtime)
-        {
-            using namespace std::chrono;
-            time_t current_time = system_clock::to_time_t(system_clock::now());
+        // TO-DO: Make it std::chrono only when available.
+        *log_stream << std::put_time(std::localtime(&current_time), time_format);
 
-            // TO-DO: Make it std::chrono only when available.
-            *log_stream << std::put_time(std::localtime(&current_time), time_format);
-        }
-
-        *log_stream << str;
-
-        if (is_add_newline)
-        {
-            *log_stream << '\n';
-        }
-    }
-
-    constexpr void log(bool is_add_newline, std::wstring_view str)
-    {
-        log(true, is_add_newline, str);
+        *log_stream << std::format(fmt, std::forward<Args>(args)...) << '\n';
     }
 
     constexpr void log(std::wstring_view str)
     {
-        log(true, true, str);
+
+        using namespace std::chrono;
+        time_t current_time = system_clock::to_time_t(system_clock::now());
+
+        // TO-DO: Make it std::chrono only when available.
+        *log_stream << std::put_time(std::localtime(&current_time), time_format);
+
+        *log_stream << str << '\n';
     }
 
     constexpr wchar_t *GetCharPointer() const

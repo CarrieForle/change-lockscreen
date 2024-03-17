@@ -59,6 +59,7 @@
         "format": "cpp",
         "span": "cpp",
         "variant": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "cstring": "cpp"
     }
 }
