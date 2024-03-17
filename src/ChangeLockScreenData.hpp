@@ -1,6 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
+#include "ErrorMessageBox.hpp"
 #include "ErrorChangeLockscreen.hpp"
 #include <iostream>
 #include <cstdlib>
@@ -32,12 +33,12 @@ struct ChangeLockscreenData
         // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
 
         char *home_path = std::getenv("HOMEPATH");
-        if (home_path == NULL)
+          if (home_path == NULL)
         {
             MessageBox(
                 NULL,
                 L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.",
-                L"CF Lockscreen Error",
+                ErrorMessageBox::universal,
                 MB_OK
             );
             PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);

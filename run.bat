@@ -1,1 +1,3 @@
-.\out\main.exe
+cd .\out
+.\main.exe
+cd ..

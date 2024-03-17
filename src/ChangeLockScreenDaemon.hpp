@@ -40,7 +40,7 @@ public:
     constexpr HWND Windows();
     void Initialize();
     virtual ~BaseChangelockscreenDaemon();
-    Log<wchar_t> logger{"log.txt"};
+    Log logger{"log.txt"};
 
 protected:
     virtual const wchar_t *ClassName() const = 0;

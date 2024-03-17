@@ -1,3 +1,4 @@
+#include "ErrorMessageBox.hpp"
 #include "ErrorChangeLockscreen.hpp"
 #include "WindowsException.hpp"
 #include "ChangeLockscreenDaemon.hpp"
@@ -73,16 +74,16 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
 
     if (!main_hwnd)
     {
-        // wchar_t* err_msg;
-        // FormatMessage(
-        //     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-        //     NULL, GetLastError(), 0, err_msg, 512, NULL);
-        // std::wcout << err_msg << L"\n";
+        const wchar_t *err_msg = L"Failed to build daemon. The program will exit";
+
         MessageBox(
             NULL,
-            L"Failed to build daemon. The program will exit.",
-            L"CF Lockscreen Error",
+            err_msg,
+            ErrorMessageBox::universal,
             MB_OK);
+
+        logger.log(err_msg);
+
         PostQuitMessage(ErrorChangeLockscreen::build_daemon);
 
         return false;
@@ -112,11 +113,16 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
 
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
     {
+        const wchar_t *err_msg = L"Failed to set up session disconnection detection. The program will exit.";
+
         MessageBox(
             main_hwnd,
-            L"Failed to set up session disconnection detection. The program will exit.",
-            L"CF Lockscreen Error",
+            err_msg,
+            ErrorMessageBox::universal,
             MB_OK);
+
+        logger.log(err_msg);
+
         PostQuitMessage(ErrorChangeLockscreen::session_detection);
     }
 
@@ -126,6 +132,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
 template <class T>
 BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 {
+    logger.log(L"Daemon Terminated");
     WTSUnRegisterSessionNotification(main_hwnd);
 }
 
@@ -195,17 +202,7 @@ LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         SetForegroundWindow(main_hwnd);
         switch (LOWORD(lParam))
         {
-        case NIN_SELECT: // On left click
-            if (GetConsoleWindow())
-            {
-                FreeConsole();
-            }
-            else
-            {
-                AllocConsole();
-            }
-
-            break;
+        case NIN_SELECT:     // On left click
         case WM_CONTEXTMENU: // On right click
         case NIN_KEYSELECT:
             std::wcout << L"Right click\n";
@@ -263,7 +260,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         MessageBox(
             NULL,
             std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-            L"CF Lockscreen Error",
+            ErrorMessageBox::universal,
             MB_OK);
         PostQuitMessage(ErrorChangeLockscreen::read_last_file);
 
@@ -291,7 +288,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             MessageBox(
                 NULL,
                 std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                L"CF Lockscreen Error",
+                ErrorMessageBox::universal,
                 MB_OK);
             PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
             return;
@@ -308,36 +305,50 @@ void ChangeLockscreenDaemon::changeLockscreen()
             rolled_number = WriteNewShuffle(last_number_file, data.files.size());
             if (!last_number_file)
             {
+                const wchar_t *err_msg = std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str();
+
                 MessageBox(
                     NULL,
-                    std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                    L"CF Lockscreen Error",
+                    err_msg,
+                    ErrorMessageBox::universal,
                     MB_OK);
+
+                logger.log(err_msg);
                 PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
+
                 return;
             }
+
             last_number_file.close();
         }
         else
         {
+            const wchar_t *err_msg = std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str();
+
             MessageBox(
                 NULL,
-                std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str(),
-                L"CF Lockscreen Error",
+                err_msg,
+                ErrorMessageBox::universal,
                 MB_OK);
+
+            logger.log(err_msg);
             PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
-            // std::wcout << "Failed fo read next index from " << data.last_file << ". Lockscreen is not changed.\n";
+
             return;
         }
     }
 
     if (!CopyFile(data.files[rolled_number], data.root / data.current_file))
     {
+        const wchar_t *err_msg = std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str();
+
         MessageBox(
             NULL,
-            std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str(),
-            L"CF Lockscreen Error",
+            err_msg,
+            ErrorMessageBox::universal,
             MB_OK);
+
+        logger.log(err_msg);
         PostQuitMessage(ErrorChangeLockscreen::copy_images);
     }
 }

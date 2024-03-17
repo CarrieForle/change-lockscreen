@@ -12,8 +12,8 @@
                 "-fdiagnostics-color=always",
                 "--std=c++23",
                 "-lwtsapi32",
-                "-lOle32",
-                "-municode"
+                "-municode",
+                "-mwindows"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
