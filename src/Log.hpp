@@ -45,7 +45,6 @@ public:
 
     constexpr void log(std::wstring_view str)
     {
-
         using namespace std::chrono;
         time_t current_time = system_clock::to_time_t(system_clock::now());
 
@@ -53,6 +52,19 @@ public:
         *log_stream << std::put_time(std::localtime(&current_time), time_format);
 
         *log_stream << str << '\n';
+    }
+
+    template <class T>
+    constexpr void write(T &&content)
+    {
+        *log_stream << std::forward<T>(content);
+    }
+
+    template <class T>
+    constexpr Log &operator<<(T &&content)
+    {
+        *log_stream << std::forward<T>(content);
+        return *this;
     }
 
     constexpr wchar_t *GetCharPointer() const
