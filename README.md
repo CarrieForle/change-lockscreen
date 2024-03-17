@@ -9,7 +9,7 @@ Download [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/w
 
 ```powershell
 cd change-lockscreen
-g++ main.cpp -o main.exe -fdiagnostics-color=always --std=c++23 -lwtsapi32 -municode -mwindows
+g++ main.cpp -o out/main.exe --std=c++23 -lwtsapi32 -municode -mwindows
 ```
 
 ## Run
