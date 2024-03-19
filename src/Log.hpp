@@ -54,6 +54,18 @@ public:
         *log_stream << str << '\n';
     }
 
+    /* 
+    std::wstring_view::data() is not neccessary null-terminated,
+    */
+    constexpr void writeTime(const std::wstring& format)
+    {
+        using namespace std::chrono;
+        time_t current_time = system_clock::to_time_t(system_clock::now());
+
+        // TO-DO: Make it std::chrono only when available.
+        *log_stream << std::put_time(std::localtime(&current_time), format.c_str());
+    }
+
     template <class T>
     constexpr void write(T &&content)
     {
