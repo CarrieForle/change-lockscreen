@@ -9,7 +9,7 @@
 class WindowsException : public std::exception
 {
 public:
-    static constexpr void ThrowIf(const bool condition)
+    static constexpr void throwIf(const bool condition)
     {
         if (condition)
         {
@@ -17,9 +17,9 @@ public:
         }
     }
 
-    static constexpr void ThrowIfNot(const bool condition)
+    static constexpr void throwIfNot(const bool condition)
     {
-        WindowsException::ThrowIf(!condition);
+        WindowsException::throwIf(!condition);
     }
     WindowsException(const DWORD error)
     {

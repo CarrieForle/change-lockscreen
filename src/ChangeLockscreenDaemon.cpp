@@ -30,12 +30,12 @@ LRESULT CALLBACK BaseChangelockscreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg,
     }
     else
     {
-        daemon = GetChangeLockScreenDaemon(hwnd);
+        daemon = getChangeLockScreenDaemon(hwnd);
     }
 
     if (daemon)
     {
-        return daemon->HandleMessage(uMsg, wParam, lParam);
+        return daemon->handleMessage(uMsg, wParam, lParam);
     }
     else
     {
@@ -56,13 +56,13 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     WNDCLASS wc = {};
     wc.lpfnWndProc = DerivedType::WindowProc;
     wc.hInstance = GetModuleHandle(NULL); // get the handle of current instance (EXE)
-    wc.lpszClassName = ClassName();
+    wc.lpszClassName = className();
 
     RegisterClass(&wc);
 
     main_hwnd = CreateWindowEx(
         dwExStyle,
-        ClassName(),
+        className(),
         lpWindowName,
         WS_DISABLED,
         x, y, width, height,
@@ -136,10 +136,10 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 }
 
 template <class T>
-constexpr HWND BaseChangelockscreenDaemon<T>::Windows() { return main_hwnd; }
+constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
 
 template <class T>
-int BaseChangelockscreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int size)
+int BaseChangelockscreenDaemon<T>::writeNewShuffle(std::fstream &out_stream, int size)
 {
     std::vector<int> numbers(size + 1);
     numbers.push_back(0);
@@ -153,7 +153,7 @@ int BaseChangelockscreenDaemon<T>::WriteNewShuffle(std::fstream &out_stream, int
 }
 
 template <class T>
-bool BaseChangelockscreenDaemon<T>::CopyFile(std::filesystem::path from_path, std::filesystem::path to_path)
+bool BaseChangelockscreenDaemon<T>::copyFile(std::filesystem::path from_path, std::filesystem::path to_path)
 {
     std::ofstream out(to_path, std::ios::binary);
     std::ifstream in(from_path, std::ios::binary);
@@ -163,8 +163,8 @@ bool BaseChangelockscreenDaemon<T>::CopyFile(std::filesystem::path from_path, st
     return out && in;
 }
 
-const wchar_t *ChangeLockscreenDaemon::ClassName() const { return L"Sample Window Class"; }
-LRESULT ChangeLockscreenDaemon::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
+const wchar_t *ChangeLockscreenDaemon::className() const { return L"Sample Window Class"; }
+LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
@@ -311,7 +311,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             logger.log(L"EOF. Constructing new random sequence.");
             last_number_file.close();
             last_number_file.open(last_number_file_path, std::ios::out);
-            rolled_number = WriteNewShuffle(last_number_file, data.files.size());
+            rolled_number = writeNewShuffle(last_number_file, data.files.size());
             if (!last_number_file)
             {
                 wchar_t err_msg[256];
@@ -349,7 +349,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         }
     }
 
-    if (!CopyFile(data.files[rolled_number], data.root / data.current_file))
+    if (!copyFile(data.files[rolled_number], data.root / data.current_file))
     {
         wchar_t err_msg[256];
         std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str());
