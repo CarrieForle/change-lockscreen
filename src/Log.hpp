@@ -79,7 +79,7 @@ public:
         return *this;
     }
 
-    constexpr wchar_t *GetCharPointer() const
+    constexpr wchar_t *getCharPointer() const
     {
         wchar_t *ptr;
         std::wstreambuf *buf = log_stream->rdbuf();
@@ -92,7 +92,7 @@ public:
         return log_stream->rdbuf();
     }
 
-    constexpr const std::wostream &GetStream() const noexcept { return *log_stream; }
+    constexpr const std::wostream &getStream() const noexcept { return *log_stream; }
 
 private:
     static constexpr const wchar_t *time_format = L"[%T] ";
