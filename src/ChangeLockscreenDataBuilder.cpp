@@ -23,15 +23,15 @@ ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildRoot(const std::f
 
 ChangeLockscreenData ChangeLockscreenDataBuilder::build()
 {
-    if (flags & 1)
+    if (~flags & 1)
     {
         this->last_file = L"last_file.txt";
     }
-    if (flags & 1 << 1)
+    if (~flags & 1 << 1)
     {
         this->current_file = L"current_file.txt";
     }
-    if (flags & 1 << 2)
+    if (~flags & 1 << 2)
     {
         // wchar_t *home_path;
         // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
