@@ -1,4 +1,5 @@
 #include "ChangeLockscreenDataBuilder.hpp"
+#include "WindowsException.hpp"
 
 ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildLastFile(const std::filesystem::path &last_file)
 {
@@ -9,15 +10,15 @@ ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildLastFile(const st
 
 ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildCurrentFile(const std::wstring &current_file)
 {
-    flags |= 1 << 1;
     this->current_file = current_file;
+    flags |= 1 << 1;
     return *this;
 }
 
 ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildRoot(const std::filesystem::path &root)
 {
-    flags |= 1 << 2;
     this->root = root;
+    flags |= 1 << 2;
     return *this;
 }
 
@@ -27,15 +28,18 @@ ChangeLockscreenData ChangeLockscreenDataBuilder::build()
     {
         this->last_file = L"last_file.txt";
     }
+
     if (~flags & 1 << 1)
     {
         this->current_file = L"current_file.txt";
     }
+
     if (~flags & 1 << 2)
     {
         // wchar_t *home_path;
-        // GetEnvironmentVariable(L"HOMEPATH", home_path, 256);
+        // GetEnviron~mentVariable(L"HOMEPATH", home_path, 256);
         char *home_path = std::getenv("HOMEPATH");
+        
         if (home_path == NULL)
         {
             MessageBox(
@@ -48,5 +52,6 @@ ChangeLockscreenData ChangeLockscreenDataBuilder::build()
 
         this->root = std::filesystem::path(home_path) / R"(Pictures/slideshow_lockscreen)";
     }
+
     return ChangeLockscreenData(last_file, current_file, root);
 }
