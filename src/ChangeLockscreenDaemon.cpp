@@ -249,7 +249,7 @@ The last_file stores 2 things.
 
 void ChangeLockscreenDaemon::changeLockscreen()
 {
-    std::filesystem::path last_number_file_path{data.root / data.last_file};
+    const std::filesystem::path last_number_file_path{data.root / data.last_file};
     std::fstream last_number_file{last_number_file_path, std::ios::in};
     std::stringstream new_contents;
 
@@ -257,7 +257,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
     if (!last_number_file)
     {
         wchar_t err_msg[256];
-        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", data.last_file.wstring()).c_str());
+        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
         MessageBox(
             NULL,
@@ -290,7 +290,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         if (!(last_number_file << new_contents.rdbuf()))
         {
             wchar_t err_msg[256];
-            std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
+            std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
             MessageBox(
                 NULL,
@@ -315,7 +315,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
             if (!last_number_file)
             {
                 wchar_t err_msg[256];
-                std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
+                std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
                 MessageBox(
                     NULL,
@@ -334,7 +334,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         else
         {
             wchar_t err_msg[256];
-            std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", data.last_file.wstring()).c_str());
+            std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
             MessageBox(
                 NULL,

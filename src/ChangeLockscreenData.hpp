@@ -14,21 +14,14 @@
 
 struct ChangeLockscreenData
 {
-    std::vector<std::filesystem::path> files;
-    std::mt19937 random_gen;
-    bool has_locked;
-    std::filesystem::path root;
-    std::filesystem::path last_file;
-    std::wstring ext;
-    std::filesystem::path current_file;
-
     ChangeLockscreenData(const std::filesystem::path &last_file,
                          const std::wstring &current_file,
-                         const std::filesystem::path & root) : has_locked(false),
-                                                                           random_gen(std::random_device{}()),
-                                                                           last_file(last_file),
-                                                                           ext(L"png"),
-                                                                           current_file(current_file + ext)
+                         const std::filesystem::path &root) : has_locked(false),
+                                                              random_gen(std::random_device{}()),
+                                                              last_file(last_file),
+                                                              ext(L"png"),
+                                                              current_file(current_file + ext),
+                                                              root(root)
 
     {
         if (!std::filesystem::exists(root / last_file))
@@ -49,6 +42,14 @@ struct ChangeLockscreenData
     }
 
     ChangeLockscreenData(ChangeLockscreenData &) = delete;
+
+    std::vector<std::filesystem::path> files;
+    std::mt19937 random_gen;
+    bool has_locked;
+    const std::filesystem::path root;
+    const std::filesystem::path last_file;
+    const std::wstring ext;
+    const std::filesystem::path current_file;
 };
 
 #endif
