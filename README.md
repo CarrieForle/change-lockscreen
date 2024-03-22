@@ -8,10 +8,10 @@ Download [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/w
 
 ```powershell
 cd change-lockscreen
-g++ src/main.cpp src/ChangeLockscreenDataBuilder.cpp -o out/main.exe --std=c++23 -lwtsapi32 -municode -mwindows
+g++ src/main.cpp src/ErrorMessageBox.cpp src/ChangeLockscreenDataBuilder.cpp -o out/main.exe --std=c++23 -lwtsapi32 -municode -mwindows
 ```
 
 ## Run
 ```powershell
-.\run
+.\run.bat
 ```
