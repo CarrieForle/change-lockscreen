@@ -1,3 +1,4 @@
+#include "TrayMenuItems.hpp"
 #include "ErrorMessageBox.hpp"
 #include "ErrorChangeLockscreen.hpp"
 #include "WindowsException.hpp"
@@ -105,8 +106,14 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     AppendMenu(
         tray_menu,
         MF_STRING | MF_ENABLED,
-        0x1,
+        TrayMenuItems::exit,
         L"Exit");
+
+    AppendMenu(
+        tray_menu,
+        MF_STRING | MF_ENABLED,
+        TrayMenuItems::change_next_lockscreen_image,
+        L"Cannot obtain next image.");
 
     SetMenu(main_hwnd, tray_menu);
 
@@ -218,7 +225,9 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
                 main_hwnd,
                 NULL))
             {
-            case 1:
+            case TrayMenuItems::check_next_lockscreen_image:
+
+            case TrayMenuItems::exit:
                 PostQuitMessage(0);
             case 0:
                 return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
