@@ -1,5 +1,5 @@
+#include "ErrorMessageBox.hpp"
 #include "ChangeLockscreenDataBuilder.hpp"
-#include "WindowsException.hpp"
 
 ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildLastFile(const std::filesystem::path &last_file)
 {
@@ -39,14 +39,10 @@ ChangeLockscreenData ChangeLockscreenDataBuilder::build()
         // wchar_t *home_path;
         // GetEnviron~mentVariable(L"HOMEPATH", home_path, 256);
         char *home_path = std::getenv("HOMEPATH");
-        
+
         if (home_path == NULL)
         {
-            MessageBox(
-                NULL,
-                L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.",
-                ErrorMessageBox::universal,
-                MB_OK);
+            ErrorMessageBox::errorMessageBox(L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.");
             PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);
         }
 

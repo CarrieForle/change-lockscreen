@@ -18,7 +18,7 @@ class BaseChangelockscreenDaemon
 {
 public:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-    bool Create(const wchar_t *lpWindowName,
+    bool create(const wchar_t *lpWindowName,
                 DWORD dwExStyle = 0,
                 int x = 0,
                 int y = 0,

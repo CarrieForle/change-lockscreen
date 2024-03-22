@@ -4,6 +4,7 @@
 namespace ErrorMessageBox
 {
     static constexpr const wchar_t* universal = L"CF Lockscreen Error";
+    void errorMessageBox(const wchar_t *);
 }
 
 #endif
