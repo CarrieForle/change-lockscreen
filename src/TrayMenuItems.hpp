@@ -3,7 +3,7 @@
 
 enum TrayMenuItems
 {
-    exit = 1,
+    terminate = 1,
     check_next_lockscreen_image = 2
 };
 

@@ -4,11 +4,9 @@
 #include "WindowsException.hpp"
 #include "ChangeLockscreenDaemon.hpp"
 #include "ChangeLockscreenData.hpp"
-#include <cstdlib>
 #include <windows.h>
 #include <wtsapi32.h>
 #include <string>
-#include <memory>
 #include <format>
 #include <random>
 #include <filesystem>
@@ -45,7 +43,7 @@ LRESULT CALLBACK BaseChangelockscreenDaemon<T>::WindowProc(HWND hwnd, UINT uMsg,
 }
 
 template <class DerivedType>
-bool BaseChangelockscreenDaemon<DerivedType>::Create(
+bool BaseChangelockscreenDaemon<DerivedType>::create(
     const wchar_t *lpWindowName,
     DWORD dwExStyle,
     int x,
@@ -75,13 +73,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     if (!main_hwnd)
     {
         const wchar_t *err_msg = L"Failed to build daemon. The program will exit";
-
-        MessageBox(
-            NULL,
-            err_msg,
-            ErrorMessageBox::universal,
-            MB_OK);
-
+        ErrorMessageBox::errorMessageBox(err_msg);
         logger.log(err_msg);
 
         PostQuitMessage(ErrorChangeLockscreen::build_daemon);
@@ -106,13 +98,13 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     AppendMenu(
         tray_menu,
         MF_STRING | MF_ENABLED,
-        TrayMenuItems::exit,
-        L"Exit");
+        TrayMenuItems::terminate,
+        L"Terminate");
 
     AppendMenu(
         tray_menu,
         MF_STRING | MF_ENABLED,
-        TrayMenuItems::change_next_lockscreen_image,
+        TrayMenuItems::check_next_lockscreen_image,
         L"Cannot obtain next image.");
 
     SetMenu(main_hwnd, tray_menu);
@@ -120,16 +112,12 @@ bool BaseChangelockscreenDaemon<DerivedType>::Create(
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
     {
         const wchar_t *err_msg = L"Failed to set up session disconnection detection. The program will exit.";
-
-        MessageBox(
-            main_hwnd,
-            err_msg,
-            ErrorMessageBox::universal,
-            MB_OK);
-
+        ErrorMessageBox::errorMessageBox(err_msg);
         logger.log(err_msg);
 
         PostQuitMessage(ErrorChangeLockscreen::session_detection);
+
+        return false;
     }
 
     return true;
@@ -227,7 +215,7 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
             {
             case TrayMenuItems::check_next_lockscreen_image:
 
-            case TrayMenuItems::exit:
+            case TrayMenuItems::terminate:
                 PostQuitMessage(0);
             case 0:
                 return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
@@ -268,15 +256,10 @@ void ChangeLockscreenDaemon::changeLockscreen()
         wchar_t err_msg[256];
         std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
-        MessageBox(
-            NULL,
-            err_msg,
-            ErrorMessageBox::universal,
-            MB_OK);
-
+        ErrorMessageBox::errorMessageBox(err_msg);
         logger.log(err_msg);
+        
         PostQuitMessage(ErrorChangeLockscreen::read_last_file);
-
         return;
     }
 
@@ -301,11 +284,9 @@ void ChangeLockscreenDaemon::changeLockscreen()
             wchar_t err_msg[256];
             std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
-            MessageBox(
-                NULL,
-                err_msg,
-                ErrorMessageBox::universal,
-                MB_OK);
+            ErrorMessageBox::errorMessageBox(err_msg);
+            logger.log(err_msg);
+
             PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
             return;
         }
@@ -326,15 +307,10 @@ void ChangeLockscreenDaemon::changeLockscreen()
                 wchar_t err_msg[256];
                 std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
-                MessageBox(
-                    NULL,
-                    err_msg,
-                    ErrorMessageBox::universal,
-                    MB_OK);
-
+                ErrorMessageBox::errorMessageBox(err_msg);
                 logger.log(err_msg);
-                PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
 
+                PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
                 return;
             }
 
@@ -345,15 +321,10 @@ void ChangeLockscreenDaemon::changeLockscreen()
             wchar_t err_msg[256];
             std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
 
-            MessageBox(
-                NULL,
-                err_msg,
-                ErrorMessageBox::universal,
-                MB_OK);
-
+            ErrorMessageBox::errorMessageBox(err_msg);
             logger.log(err_msg);
-            PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
 
+            PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
             return;
         }
     }
@@ -363,13 +334,9 @@ void ChangeLockscreenDaemon::changeLockscreen()
         wchar_t err_msg[256];
         std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str());
 
-        MessageBox(
-            NULL,
-            err_msg,
-            ErrorMessageBox::universal,
-            MB_OK);
-
+        ErrorMessageBox::errorMessageBox(err_msg);
         logger.log(err_msg);
+
         PostQuitMessage(ErrorChangeLockscreen::copy_images);
     } else {
         logger.log(L"Lockscreen updated to index {}: \"{}\"", rolled_number, data.files[rolled_number].wstring());

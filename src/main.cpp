@@ -1,11 +1,8 @@
 #include "ChangeLockscreenDaemon.hpp"
-#include "ChangeLockscreenData.hpp"
-#include "Log.hpp"
 #include <windows.h>
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdLine, int nCmdShow)
 {
-
     // Prevent 2 instances of daemon running.
     HANDLE single_instance_mutex = CreateMutex(NULL, TRUE, L"SINGLE INSTANCE");
 
@@ -15,7 +12,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
     }
 
     ChangeLockscreenDaemon daemon;
-    if (!daemon.Create(L"CF Lockscreen image changer")) {
+    if (!daemon.create(L"CF Lockscreen image changer")) {
         return ErrorChangeLockscreen::build_daemon;
     }
 

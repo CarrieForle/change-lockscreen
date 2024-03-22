@@ -1,5 +1,5 @@
-#ifndef HELPER_FUNCTIONS
-#define HELPER_FUNCTIONS
+#ifndef WINDOWS_EXCEPTION_HPP
+#define WINDOWS_EXCEPTION_HPP
 
 #include <cstdlib>
 #include <iostream>
