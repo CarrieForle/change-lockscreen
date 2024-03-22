@@ -98,14 +98,14 @@ bool BaseChangelockscreenDaemon<DerivedType>::create(
     AppendMenu(
         tray_menu,
         MF_STRING | MF_ENABLED,
-        TrayMenuItems::terminate,
-        L"Terminate");
+        TrayMenuItems::check_next_lockscreen_image,
+        L"Cannot obtain next image.");
 
     AppendMenu(
         tray_menu,
         MF_STRING | MF_ENABLED,
-        TrayMenuItems::check_next_lockscreen_image,
-        L"Cannot obtain next image.");
+        TrayMenuItems::terminate,
+        L"Terminate");
 
     SetMenu(main_hwnd, tray_menu);
 
@@ -133,8 +133,7 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 template <class T>
 constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
 
-template <class T>
-int BaseChangelockscreenDaemon<T>::writeNewShuffle(std::fstream &out_stream, int size)
+int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream, int size)
 {
     std::vector<int> numbers(size + 1);
     numbers.push_back(0);
@@ -147,8 +146,7 @@ int BaseChangelockscreenDaemon<T>::writeNewShuffle(std::fstream &out_stream, int
     return numbers[1];
 }
 
-template <class T>
-bool BaseChangelockscreenDaemon<T>::copyFile(std::filesystem::path from_path, std::filesystem::path to_path)
+bool ChangeLockscreenDaemon::copyFile(std::filesystem::path from_path, std::filesystem::path to_path)
 {
     std::ofstream out(to_path, std::ios::binary);
     std::ifstream in(from_path, std::ios::binary);
@@ -199,7 +197,6 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         case NIN_SELECT:     // On left click
         case WM_CONTEXTMENU: // On right click
         case NIN_KEYSELECT:
-            std::wcout << L"Right click\n";
             POINT cursorPos;
             GetCursorPos(&cursorPos);
             switch (TrackPopupMenu(
@@ -214,9 +211,19 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
                 NULL))
             {
             case TrayMenuItems::check_next_lockscreen_image:
-
+            {
+                ShellExecute(
+                    main_hwnd,
+                    L"open",
+                    (data.root / data.current_file).wstring().c_str(),
+                    NULL,
+                    NULL,
+                    SW_SHOW);
+            }
+            break;
             case TrayMenuItems::terminate:
                 PostQuitMessage(0);
+                break;
             case 0:
                 return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
             }
@@ -227,7 +234,6 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         }
 
         return 0;
-
     default:
         return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
     }
@@ -258,7 +264,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
 
         ErrorMessageBox::errorMessageBox(err_msg);
         logger.log(err_msg);
-        
+
         PostQuitMessage(ErrorChangeLockscreen::read_last_file);
         return;
     }
@@ -338,7 +344,16 @@ void ChangeLockscreenDaemon::changeLockscreen()
         logger.log(err_msg);
 
         PostQuitMessage(ErrorChangeLockscreen::copy_images);
-    } else {
+    }
+    else
+    {
+        ModifyMenu(
+            tray_menu,
+            TrayMenuItems::check_next_lockscreen_image,
+            MF_ENABLED | MF_STRING,
+            TrayMenuItems::check_next_lockscreen_image,
+            data.files[rolled_number].filename().wstring().c_str());
+            
         logger.log(L"Lockscreen updated to index {}: \"{}\"", rolled_number, data.files[rolled_number].wstring());
     }
 }
