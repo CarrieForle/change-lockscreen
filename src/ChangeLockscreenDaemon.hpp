@@ -26,26 +26,23 @@ public:
                 int nHeight = 1,
                 HWND hWndParent = NULL);
 
-    static inline ChangeLockscreenDaemon *getChangeLockScreenDaemon(HWND hwnd)
+    static inline DerivedType *getChangeLockScreenDaemon(HWND hwnd)
     {
         LONG_PTR data_ptr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
-        ChangeLockscreenDaemon *data = reinterpret_cast<ChangeLockscreenDaemon *>(data_ptr);
+        DerivedType *data = reinterpret_cast<DerivedType *>(data_ptr);
 
         return data;
     }
 
-    int writeNewShuffle(std::fstream&, int);
-    bool copyFile(std::filesystem::path, std::filesystem::path);
-
     BaseChangelockscreenDaemon() = default;
     constexpr HWND windows();
-    void initialize();
     virtual ~BaseChangelockscreenDaemon();
     Log logger{"log.txt"};
 
 protected:
     virtual const wchar_t *className() const = 0;
     virtual LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
+    virtual void changeLockScreen() {};
     HWND main_hwnd = NULL;
     HMENU tray_menu = CreatePopupMenu();
     ChangeLockscreenData data = ChangeLockscreenDataBuilder{}.build();
@@ -54,8 +51,10 @@ protected:
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
 {
 public:
-    virtual const wchar_t *className() const;
-    virtual LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+    const wchar_t *className() const;
+    LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+    int writeNewShuffle(std::fstream &, int);
+    bool copyFile(std::filesystem::path, std::filesystem::path);
     void changeLockscreen();
 };
 

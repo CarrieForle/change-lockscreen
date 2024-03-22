@@ -31,7 +31,7 @@ ChangeLockscreenData ChangeLockscreenDataBuilder::build()
 
     if (~flags & 1 << 1)
     {
-        this->current_file = L"current";
+        this->current_file = L"current.";
     }
 
     if (~flags & 1 << 2)
