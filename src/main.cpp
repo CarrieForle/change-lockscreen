@@ -19,8 +19,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
         return ErrorChangeLockscreen::build_daemon;
     }
 
-    daemon.logger.writeTime(L"[%F %T]");
-    daemon.logger.write(L"Daemon Initialized\n");
+    daemon.logger.writeTime(L"[%F %T] Demon Initialized\n");
 
     MSG msg = {};
 
