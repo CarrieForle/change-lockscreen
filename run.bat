@@ -1,3 +1,3 @@
 cd .\out
-.\main.exe
+.\change-lockscreen.exe
 cd ..

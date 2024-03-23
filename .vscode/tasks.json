@@ -10,7 +10,7 @@
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
                 "-o",
-                "${workspaceFolder}\\out\\main.exe",
+                "${workspaceFolder}\\out\\change-lockscreen.exe",
                 "-fdiagnostics-color=always",
                 "--std=c++23",
                 "-lwtsapi32",
