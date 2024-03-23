@@ -6,6 +6,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
     // Prevent 2 instances of daemon running.
     HANDLE single_instance_mutex = CreateMutex(NULL, TRUE, L"SINGLE INSTANCE");
 
+    std::wcout << pCmdLine;
+
     if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
         return 0;

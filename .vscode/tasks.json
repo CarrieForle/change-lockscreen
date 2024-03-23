@@ -3,15 +3,16 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++.exe build active file",
+            "label": "(g++) Build Debug (console)",
             "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
             "args": [
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
                 "-o",
-                "${workspaceFolder}\\out\\change-lockscreen.exe",
+                "${workspaceFolder}\\out\\console.exe",
                 "-fdiagnostics-color=always",
+                "-Og",
                 "--std=c++23",
                 "-lwtsapi32",
                 "-municode",
@@ -26,6 +27,61 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "detail": "compiler: C:\\Program Files\\mingw64\\bin\\g++.exe"
+        },
+        {
+            "type": "cppbuild",
+            "label": "(g++) Build Debug (consoleless)",
+            "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
+            "args": [
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
+                "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
+                "-o",
+                "${workspaceFolder}\\out\\consoleless.exe",
+                "-Og",
+                "-fdiagnostics-color=always",
+                "--std=c++23",
+                "-lwtsapi32",
+                "-municode",
+                "-mwindows"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "detail": "compiler: C:\\Program Files\\mingw64\\bin\\g++.exe"
+        },
+        {
+            "type": "cppbuild",
+            "label": "(g++) Build Release",
+            "command": "C:\\Program Files\\mingw64\\bin\\g++.exe",
+            "args": [
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
+                "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
+                "-o",
+                "${workspaceFolder}\\out\\change-lockscreen.exe",
+                "-O3",
+                "--std=c++23",
+                "-lwtsapi32",
+                "-municode",
+                "-mwindows"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
             },
             "detail": "compiler: C:\\Program Files\\mingw64\\bin\\g++.exe"
         }
