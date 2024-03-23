@@ -260,7 +260,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
     while (!last_number_file)
     {
         wchar_t err_msg[256];
-        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon. Click \"Yes\" to retry; \"No\" to terminate the daemon.", last_number_file_path.wstring()).c_str());
+        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", last_number_file_path.wstring()).c_str());
         logger.log(err_msg);
 
         if (ErrorMessageBox::errorMessageBox(err_msg) == IDYES)
