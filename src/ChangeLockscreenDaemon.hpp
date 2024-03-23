@@ -53,7 +53,7 @@ class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscree
 public:
     const wchar_t *className() const;
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
-    int writeNewShuffle(std::fstream &, int);
+    int writeNewShuffle(std::fstream &);
     bool copyFile(std::filesystem::path, std::filesystem::path);
     void changeLockscreen();
 };

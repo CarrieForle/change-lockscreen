@@ -1,7 +1,6 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
-#include "ErrorMessageBox.hpp"
 #include "ErrorChangeLockscreen.hpp"
 #include <iostream>
 #include <cstdlib>

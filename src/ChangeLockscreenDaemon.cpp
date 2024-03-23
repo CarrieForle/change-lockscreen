@@ -73,7 +73,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::create(
     if (!main_hwnd)
     {
         const wchar_t *err_msg = L"Failed to build daemon. The program will exit";
-        ErrorMessageBox::errorMessageBox(err_msg);
+        ErrorMessageBox::errorMessageBox(err_msg, MB_OK);
         logger.log(err_msg);
 
         PostQuitMessage(ErrorChangeLockscreen::build_daemon);
@@ -112,7 +112,7 @@ bool BaseChangelockscreenDaemon<DerivedType>::create(
     if (!WTSRegisterSessionNotification(main_hwnd, NOTIFY_FOR_THIS_SESSION))
     {
         const wchar_t *err_msg = L"Failed to set up session disconnection detection. The program will exit.";
-        ErrorMessageBox::errorMessageBox(err_msg);
+        ErrorMessageBox::errorMessageBox(err_msg, MB_OK);
         logger.log(err_msg);
 
         PostQuitMessage(ErrorChangeLockscreen::session_detection);
@@ -133,9 +133,9 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 template <class T>
 constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
 
-int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream, int size)
+int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream)
 {
-    std::vector<int> numbers(size + 1);
+    std::vector<int> numbers(data.files.size() + 1);
     numbers.push_back(0);
     std::iota(numbers.begin() + 1, numbers.end(), 0);
 
@@ -257,16 +257,26 @@ void ChangeLockscreenDaemon::changeLockscreen()
     std::stringstream new_contents;
 
     int rolled_number = 0;
-    if (!last_number_file)
+    while (!last_number_file)
     {
         wchar_t err_msg[256];
-        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
-
-        ErrorMessageBox::errorMessageBox(err_msg);
+        std::wcscpy(err_msg, std::format(L"Failed to open \"{}\" for reading. Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon. Click \"Yes\" to retry; \"No\" to terminate the daemon.", last_number_file_path.wstring()).c_str());
         logger.log(err_msg);
 
-        PostQuitMessage(ErrorChangeLockscreen::read_last_file);
-        return;
+        if (ErrorMessageBox::errorMessageBox(err_msg) == IDYES)
+        {
+            if (last_number_file.is_open())
+            {
+                last_number_file.close();
+            }
+
+            last_number_file.open(last_number_file_path, std::ios::in);
+        }
+        else
+        {
+            PostQuitMessage(ErrorChangeLockscreen::read_last_file);
+            return;
+        }
     }
 
     int last_index = -1;
@@ -282,19 +292,31 @@ void ChangeLockscreenDaemon::changeLockscreen()
 
     if (last_number_file >> rolled_number)
     {
+        std::stringstream backup;
+        backup << last_number_file.rdbuf();
         last_number_file.close();
         last_number_file.open(last_number_file_path, std::ios::out);
 
-        if (!(last_number_file << new_contents.rdbuf()))
+        while (!(last_number_file << new_contents.rdbuf()))
         {
             wchar_t err_msg[256];
-            std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
-
-            ErrorMessageBox::errorMessageBox(err_msg);
+            std::wcscpy(err_msg, std::format(L"Failed to update sequence in \"{}\". Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", last_number_file_path.wstring()).c_str());
             logger.log(err_msg);
 
-            PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
-            return;
+            if (ErrorMessageBox::errorMessageBox(err_msg) == IDYES)
+            {
+                if (last_number_file.is_open())
+                {
+                    last_number_file.close();
+                }
+
+                last_number_file.open(last_number_file_path, std::ios::out);
+            }
+            else
+            {
+                PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
+                return;
+            }
         }
 
         last_number_file.close();
@@ -307,17 +329,28 @@ void ChangeLockscreenDaemon::changeLockscreen()
             logger.log(L"EOF. Constructing new random sequence.");
             last_number_file.close();
             last_number_file.open(last_number_file_path, std::ios::out);
-            rolled_number = writeNewShuffle(last_number_file, data.files.size());
-            if (!last_number_file)
+            rolled_number = writeNewShuffle(last_number_file);
+
+            while (!last_number_file)
             {
                 wchar_t err_msg[256];
-                std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
-
-                ErrorMessageBox::errorMessageBox(err_msg);
+                std::wcscpy(err_msg, std::format(L"Failed to write new random sequence to \"{}\". Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", last_number_file_path.wstring()).c_str());
                 logger.log(err_msg);
 
-                PostQuitMessage(ErrorChangeLockscreen::write_last_file_new);
-                return;
+                if (ErrorMessageBox::errorMessageBox(err_msg) == IDYES)
+                {
+                    if (last_number_file.is_open())
+                    {
+                        last_number_file.close();
+                    }
+                    last_number_file.open(last_number_file_path, std::ios::out);
+                    rolled_number = writeNewShuffle(last_number_file);
+                }
+                else
+                {
+                    PostQuitMessage(ErrorChangeLockscreen::copy_images);
+                    return;
+                }
             }
 
             last_number_file.close();
@@ -325,9 +358,9 @@ void ChangeLockscreenDaemon::changeLockscreen()
         else
         {
             wchar_t err_msg[256];
-            std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed.", last_number_file_path.wstring()).c_str());
+            std::wcscpy(err_msg, std::format(L"Failed to read next index from \"{}\". Lockscreen is not changed and the daemon will be terminated.", last_number_file_path.wstring()).c_str());
 
-            ErrorMessageBox::errorMessageBox(err_msg);
+            ErrorMessageBox::errorMessageBox(err_msg, MB_OK);
             logger.log(err_msg);
 
             PostQuitMessage(ErrorChangeLockscreen::read_last_file_next_index);
@@ -335,25 +368,23 @@ void ChangeLockscreenDaemon::changeLockscreen()
         }
     }
 
-    if (!copyFile(data.files[rolled_number], data.root / data.current_file))
+    while (!copyFile(data.files[rolled_number], data.root / data.current_file))
     {
         wchar_t err_msg[256];
-        std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed.", data.current_file.wstring()).c_str());
-
-        ErrorMessageBox::errorMessageBox(err_msg);
+        std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", data.current_file.wstring()).c_str());
         logger.log(err_msg);
 
-        PostQuitMessage(ErrorChangeLockscreen::copy_images);
+        if (ErrorMessageBox::errorMessageBox(err_msg) == IDNO)
+        {
+            PostQuitMessage(ErrorChangeLockscreen::copy_images);
+        }
     }
-    else
-    {
-        ModifyMenu(
-            tray_menu,
-            TrayMenuItems::check_next_lockscreen_image,
-            MF_ENABLED | MF_STRING,
-            TrayMenuItems::check_next_lockscreen_image,
-            data.files[rolled_number].filename().wstring().c_str());
-            
-        logger.log(L"Lockscreen updated to index {}: \"{}\"", rolled_number, data.files[rolled_number].wstring());
-    }
+    ModifyMenu(
+        tray_menu,
+        TrayMenuItems::check_next_lockscreen_image,
+        MF_ENABLED | MF_STRING,
+        TrayMenuItems::check_next_lockscreen_image,
+        data.files[rolled_number].filename().wstring().c_str());
+
+    logger.log(L"Lockscreen updated to index {}: \"{}\"", rolled_number, data.files[rolled_number].wstring());
 }

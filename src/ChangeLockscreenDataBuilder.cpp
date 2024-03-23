@@ -42,7 +42,8 @@ ChangeLockscreenData ChangeLockscreenDataBuilder::build()
 
         if (home_path == NULL)
         {
-            ErrorMessageBox::errorMessageBox(L"Failed to retrieve \"HOMEPATH\" environment variable. The program will exit.");
+            ErrorMessageBox::errorMessageBox(L"Failed to retrieve \"HOMEPATH\" environment variable. The daemon will be terminated.", MB_OK);
+            this->root = L"";
             PostQuitMessage(ErrorChangeLockscreen::retrieve_home_path);
         }
 

@@ -1,14 +1,14 @@
 #include "ErrorMessageBox.hpp"
-#include <windows.h>
+#include <winuser.h>
 
 namespace ErrorMessageBox
 {
-    void errorMessageBox(const wchar_t *error_message)
+    int errorMessageBox(const wchar_t *error_message, const unsigned int flags)
     {
-        MessageBox(
+        return MessageBox(
             NULL,
             error_message,
             universal,
-            MB_OK);
+            flags | MB_ICONERROR | MB_TASKMODAL);
     }
 }
