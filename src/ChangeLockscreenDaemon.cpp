@@ -377,6 +377,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
         if (ErrorMessageBox::errorMessageBox(err_msg) == IDNO)
         {
             PostQuitMessage(ErrorChangeLockscreen::copy_images);
+            return;
         }
     }
     ModifyMenu(
