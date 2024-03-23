@@ -146,10 +146,10 @@ int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream)
     return numbers[1];
 }
 
-bool ChangeLockscreenDaemon::copyFile(std::filesystem::path from_path, std::filesystem::path to_path)
+bool ChangeLockscreenDaemon::copyFile(const std::filesystem::path from_path, const std::filesystem::path to_path)
 {
-    std::ofstream out(to_path, std::ios::binary);
     std::ifstream in(from_path, std::ios::binary);
+    std::ofstream out(to_path, std::ios::binary);
 
     out << in.rdbuf();
 
