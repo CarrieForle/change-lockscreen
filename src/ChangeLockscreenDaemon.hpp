@@ -2,9 +2,9 @@
 #define CHANGE_LOCKSCREEN_HPP
 
 #include "ChangeLockscreenDataBuilder.hpp"
-#include <iostream>
 #include "Log.hpp"
 #include "ChangeLockscreenData.hpp"
+#include <iostream>
 #include <string_view>
 #include <windows.h>
 
@@ -34,7 +34,7 @@ public:
         return data;
     }
 
-    BaseChangelockscreenDaemon() = default;
+    BaseChangelockscreenDaemon(const ParsedData& pd);
     constexpr HWND windows();
     virtual ~BaseChangelockscreenDaemon();
     Log logger{"log.txt"};
@@ -45,7 +45,8 @@ protected:
     virtual void changeLockScreen() {};
     HWND main_hwnd = NULL;
     HMENU tray_menu = CreatePopupMenu();
-    ChangeLockscreenData data = ChangeLockscreenDataBuilder{}.build();
+    ParsedData commandline_data;
+    ChangeLockscreenData data;
 };
 
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
