@@ -14,15 +14,19 @@
 class Log
 {
 public:
-    Log(const std::filesystem::path &p = L"log.txt")
-        : log_path(p)
-    {
-    }
+    constexpr Log(const std::filesystem::path &p) : log_path(p / "log.txt") {}
+
+    Log() : log_path("log.txt") {}
 
     virtual ~Log()
     {
         std::wofstream out{log_path};
         out << log_stream.rdbuf();
+    }
+
+    constexpr void setRoot(const std::filesystem::path &p)
+    {
+        log_path = p / "log.txt";
     }
 
     // TO-DO: use std::print() after available
@@ -91,7 +95,7 @@ public:
 
 private:
     static constexpr const wchar_t *time_format = L"[%T] ";
-    const std::filesystem::path log_path;
+    std::filesystem::path log_path;
     std::wstringstream log_stream;
 };
 

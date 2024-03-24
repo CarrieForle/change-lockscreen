@@ -1,4 +1,7 @@
 #include "ChangeLockscreenDaemon.hpp"
+#include "ParsedData.hpp"
+#include "CommandLineParser.hpp"
+#include "ParserException.hpp"
 #include <windows.h>
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdLine, int nCmdShow)
@@ -11,10 +14,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
         return 0;
     }
     
-    std::wcout << pCmdLine;
+    ParsedData parsed_data;
 
-    ChangeLockscreenDaemon daemon;
-    if (!daemon.create(L"CF Lockscreen image changer")) {
+    try
+    {
+        parsed_data = CommandLineParser::Parse(pCmdLine);
+    }
+    catch (ParserException &e)
+    {
+        std::wcout << e.what() << "\n";
+        return 0;
+    }
+
+    ChangeLockscreenDaemon daemon(parsed_data);
+    if (!daemon.create(L"CF Lockscreen image changer"))
+    {
         return ErrorChangeLockscreen::build_daemon;
     }
 

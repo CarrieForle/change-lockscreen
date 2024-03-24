@@ -1,15 +1,13 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
+#include <utlity>
 #include "ErrorChangeLockscreen.hpp"
-#include <iostream>
-#include <cstdlib>
 #include <filesystem>
 #include <vector>
 #include <random>
 #include <windows.h>
 #include <fstream>
-#include <optional>
 
 struct ChangeLockscreenData
 {
@@ -42,7 +40,10 @@ struct ChangeLockscreenData
         }
     }
 
-    ChangeLockscreenData(ChangeLockscreenData &) = delete;
+    ChangeLockscreenData(ChangeLockscreenData &&other) : ChangeLockscreenData()
+    {
+        swap(*this, other);
+    }
 
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
@@ -52,5 +53,16 @@ struct ChangeLockscreenData
     const std::wstring ext;
     const std::filesystem::path current_file;
 };
+
+friend void swap(ChangeLockscreen &a, ChangeLockscreen &b) noexcept
+{
+    using std::swap;
+    swap(a.files, b.other.files);
+    swap(a.has_locked, b.other.has_locked);
+    swap(a.root, b.other.root);
+    swap(a.last_file, b.other.last_file);
+    swap(a.ext, b.other.ext);
+    swap(a.current_file, b.other.current_file);
+}
 
 #endif

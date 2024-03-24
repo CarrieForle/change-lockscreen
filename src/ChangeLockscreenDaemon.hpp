@@ -2,6 +2,7 @@
 #define CHANGE_LOCKSCREEN_HPP
 
 #include "ChangeLockscreenDataBuilder.hpp"
+#include "ParsedData.hpp"
 #include "Log.hpp"
 #include "ChangeLockscreenData.hpp"
 #include <iostream>
@@ -34,10 +35,10 @@ public:
         return data;
     }
 
-    BaseChangelockscreenDaemon(const ParsedData& pd);
+    BaseChangelockscreenDaemon(const ParsedData&);
     constexpr HWND windows();
     virtual ~BaseChangelockscreenDaemon();
-    Log logger{"log.txt"};
+    Log logger;
 
 protected:
     virtual const wchar_t *className() const = 0;
@@ -53,6 +54,7 @@ class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscree
 {
 public:
     const wchar_t *className() const;
+    ChangeLockscreenDaemon(const ParsedData&);
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     int writeNewShuffle(std::fstream &);
     bool copyFile(const std::filesystem::path, const std::filesystem::path);

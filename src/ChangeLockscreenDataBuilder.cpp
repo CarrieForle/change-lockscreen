@@ -1,21 +1,21 @@
 #include "ErrorMessageBox.hpp"
 #include "ChangeLockscreenDataBuilder.hpp"
 
-ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildLastFile(const std::filesystem::path &last_file)
+ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::setLastFile(const std::filesystem::path &last_file)
 {
     this->last_file = last_file;
     flags |= 1;
     return *this;
 }
 
-ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildCurrentFile(const std::wstring &current_file)
+ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::setCurrentFile(const std::wstring &current_file)
 {
     this->current_file = current_file;
     flags |= 1 << 1;
     return *this;
 }
 
-ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::buildRoot(const std::filesystem::path &root)
+ChangeLockscreenDataBuilder &ChangeLockscreenDataBuilder::setRoot(const std::filesystem::path &root)
 {
     this->root = root;
     flags |= 1 << 2;

@@ -130,6 +130,19 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
     WTSUnRegisterSessionNotification(main_hwnd);
 }
 
+template <class DerivedType>
+BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(const ParsedData &pd) : commandline_data(pd){
+    ChangeLockscreenDataBuilder builder;
+
+    if (pd.lockscreen_images_location)
+        builder.setRoot(pd.lockscreen_images_location.value());
+
+    if (pd.cwd)
+        logger.setRoot(pd.cwd.value());
+
+    data = builder.build();
+}
+
 template <class T>
 constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
 
@@ -157,6 +170,9 @@ bool ChangeLockscreenDaemon::copyFile(const std::filesystem::path from_path, con
 }
 
 const wchar_t *ChangeLockscreenDaemon::className() const { return L"Sample Window Class"; }
+ChangeLockscreenDaemon::ChangeLockscreenDaemon(const ParsedData& pd): BaseChangelockscreenDaemon<ChangeLockscreenDaemon>(pd)
+{
+}
 LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)

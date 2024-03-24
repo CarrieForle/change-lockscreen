@@ -20,9 +20,9 @@ private:
     std::int8_t flags = 0;
 
 public:
-    ChangeLockscreenDataBuilder &buildLastFile(const std::filesystem::path &);
-    ChangeLockscreenDataBuilder &buildCurrentFile(const std::wstring &);
-    ChangeLockscreenDataBuilder &buildRoot(const std::filesystem::path &);
+    ChangeLockscreenDataBuilder &setLastFile(const std::filesystem::path &);
+    ChangeLockscreenDataBuilder &setCurrentFile(const std::wstring &);
+    ChangeLockscreenDataBuilder &setRoot(const std::filesystem::path &);
     ChangeLockscreenData build();
 };
 
