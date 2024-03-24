@@ -12,12 +12,10 @@
 struct ChangeLockscreenData
 {
     ChangeLockscreenData() = default;
-    ChangeLockscreenData(ChangeLockscreenData &) = default;
-    virtual ~ChangeLockscreenData() = default;
 
-    ChangeLockscreenData(const std::filesystem::path &last_file,
-                         const std::wstring &current_file,
-                         const std::filesystem::path &root) : has_locked(false),
+    ChangeLockscreenData(std::filesystem::path last_file,
+                         std::wstring current_file,
+                         std::filesystem::path root) : has_locked(false),
                                                               random_gen(std::random_device{}()),
                                                               last_file(last_file),
                                                               ext(L"png"),
@@ -42,23 +40,6 @@ struct ChangeLockscreenData
                 files.push_back(file_path);
             }
         }
-    }
-
-    friend void swap(ChangeLockscreenData &first, ChangeLockscreenData &second)
-    {
-        using std::swap;
-
-        swap(first.files, second.files);
-        swap(first.random_gen, second.random_gen);
-        swap(first.has_locked, second.has_locked);
-        swap(first.root, second.root);
-        swap(first.last_file, second.last_file);
-        swap(first.ext, second.ext);
-        swap(first.current_file, second.current_file);
-    }
-
-    ChangeLockscreenData(ChangeLockscreenData&& other): ChangeLockscreenData() {
-        swap(*this, other);
     }
 
     std::vector<std::filesystem::path> files;

@@ -132,7 +132,7 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 }
 
 template <class DerivedType>
-BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(const ParsedData &pd) : commandline_data(pd){
+BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(ParsedData pd) : commandline_data(pd){
     ChangeLockscreenDataBuilder builder;
 
     if (pd.lockscreen_images_location)
@@ -146,6 +146,8 @@ BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(const Parsed
 
 template <class T>
 constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
+
+ChangeLockscreenDaemon::ChangeLockscreenDaemon(const ParsedData pd): BaseChangelockscreenDaemon<ChangeLockscreenDaemon>(pd) {}
 
 int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream)
 {
@@ -170,10 +172,7 @@ bool ChangeLockscreenDaemon::copyFile(const std::filesystem::path from_path, con
     return out && in;
 }
 
-const wchar_t *ChangeLockscreenDaemon::className() const { return L"Sample Window Class"; }
-ChangeLockscreenDaemon::ChangeLockscreenDaemon(const ParsedData& pd): BaseChangelockscreenDaemon<ChangeLockscreenDaemon>(pd)
-{
-}
+constexpr const wchar_t *ChangeLockscreenDaemon::className() const noexcept { return L"Sample Window Class"; }
 LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -256,7 +255,6 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
     }
 }
 
-ChangeLockscreenDaemon::ChangeLockscreenDaemon(const ParsedData pd): BaseChangelockscreenDaemon<ChangeLockscreenDaemon>(pd) {}
 
 /*
 It works by using data.files (vector<std::filesystem::path>),

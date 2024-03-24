@@ -36,7 +36,7 @@ public:
         return data;
     }
 
-    BaseChangelockscreenDaemon(const ParsedData&);
+    BaseChangelockscreenDaemon(ParsedData);
     constexpr HWND windows();
     virtual ~BaseChangelockscreenDaemon();
     Log logger;
@@ -54,9 +54,8 @@ protected:
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
 {
 public:
+    constexpr const wchar_t *className() const noexcept;
     ChangeLockscreenDaemon(const ParsedData pd);
-    const wchar_t *className() const;
-    ChangeLockscreenDaemon(const ParsedData&);
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     int writeNewShuffle(std::fstream &);
     bool copyFile(const std::filesystem::path, const std::filesystem::path);
