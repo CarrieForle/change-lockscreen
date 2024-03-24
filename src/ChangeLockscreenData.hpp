@@ -1,7 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
-#include <utlity>
+#include <utility>
 #include "ErrorChangeLockscreen.hpp"
 #include <filesystem>
 #include <vector>
@@ -11,6 +11,10 @@
 
 struct ChangeLockscreenData
 {
+    ChangeLockscreenData() = default;
+    ChangeLockscreenData(ChangeLockscreenData &) = default;
+    virtual ~ChangeLockscreenData() = default;
+
     ChangeLockscreenData(const std::filesystem::path &last_file,
                          const std::wstring &current_file,
                          const std::filesystem::path &root) : has_locked(false),
@@ -40,29 +44,30 @@ struct ChangeLockscreenData
         }
     }
 
-    ChangeLockscreenData(ChangeLockscreenData &&other) : ChangeLockscreenData()
+    friend void swap(ChangeLockscreenData &first, ChangeLockscreenData &second)
     {
+        using std::swap;
+
+        swap(first.files, second.files);
+        swap(first.random_gen, second.random_gen);
+        swap(first.has_locked, second.has_locked);
+        swap(first.root, second.root);
+        swap(first.last_file, second.last_file);
+        swap(first.ext, second.ext);
+        swap(first.current_file, second.current_file);
+    }
+
+    ChangeLockscreenData(ChangeLockscreenData&& other): ChangeLockscreenData() {
         swap(*this, other);
     }
 
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
     bool has_locked;
-    const std::filesystem::path root;
-    const std::filesystem::path last_file;
-    const std::wstring ext;
-    const std::filesystem::path current_file;
+    std::filesystem::path root;
+    std::filesystem::path last_file;
+    std::filesystem::path current_file;
+    std::wstring ext;
 };
-
-friend void swap(ChangeLockscreen &a, ChangeLockscreen &b) noexcept
-{
-    using std::swap;
-    swap(a.files, b.other.files);
-    swap(a.has_locked, b.other.has_locked);
-    swap(a.root, b.other.root);
-    swap(a.last_file, b.other.last_file);
-    swap(a.ext, b.other.ext);
-    swap(a.current_file, b.other.current_file);
-}
 
 #endif

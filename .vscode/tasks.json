@@ -9,7 +9,7 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
-                "${workspaceFolder}\\src\\ParsedData.cpp",
+                "${workspaceFolder}\\src\\ParserException.cpp",
                 "${workspaceFolder}\\src\\CommandLineParser.cpp",
                 "-o",
                 "${workspaceFolder}\\out\\console.exe",
@@ -18,7 +18,6 @@
                 "--std=c++23",
                 "-lwtsapi32",
                 "-municode",
-                "-mwindows"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -40,8 +39,8 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
-                "${workspaceFolder}\\src\\ParsedData.cpp",
                 "${workspaceFolder}\\src\\CommandLineParser.cpp",
+                "${workspaceFolder}\\src\\ParserException.cpp",
                 "-o",
                 "${workspaceFolder}\\out\\consoleless.exe",
                 "-Og",
@@ -70,7 +69,7 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
-                "${workspaceFolder}\\src\\ParsedData.cpp",
+                "${workspaceFolder}\\src\\ParserException.cpp",
                 "${workspaceFolder}\\src\\CommandLineParser.cpp",
                 "-o",
                 "${workspaceFolder}\\out\\change-lockscreen.exe",
@@ -94,7 +93,7 @@
         {
             "label": "(g++) Build Everything",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder"
             },
             "dependsOn": [
                 "(g++) Build Debug (console)",

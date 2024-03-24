@@ -1,3 +1,4 @@
+#include "ParsedData.hpp"
 #include "TrayMenuItems.hpp"
 #include "ErrorMessageBox.hpp"
 #include "ErrorChangeLockscreen.hpp"
@@ -254,6 +255,8 @@ LRESULT ChangeLockscreenDaemon::handleMessage(UINT uMsg, WPARAM wParam, LPARAM l
         return DefWindowProc(main_hwnd, uMsg, wParam, lParam);
     }
 }
+
+ChangeLockscreenDaemon::ChangeLockscreenDaemon(const ParsedData pd): BaseChangelockscreenDaemon<ChangeLockscreenDaemon>(pd) {}
 
 /*
 It works by using data.files (vector<std::filesystem::path>),

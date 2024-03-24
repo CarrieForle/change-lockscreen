@@ -1,6 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_HPP
 #define CHANGE_LOCKSCREEN_HPP
 
+#include "ParsedData.hpp"
 #include "ChangeLockscreenDataBuilder.hpp"
 #include "ParsedData.hpp"
 #include "Log.hpp"
@@ -53,6 +54,7 @@ protected:
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
 {
 public:
+    ChangeLockscreenDaemon(const ParsedData pd);
     const wchar_t *className() const;
     ChangeLockscreenDaemon(const ParsedData&);
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);

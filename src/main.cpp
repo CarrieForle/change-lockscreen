@@ -9,26 +9,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
     // Prevent 2 instances of daemon running.
     HANDLE single_instance_mutex = CreateMutex(NULL, TRUE, L"SINGLE INSTANCE");
 
-    if (GetLastError() == ERROR_ALREADY_EXISTS)
-    {
-        return 0;
-    }
-    
     ParsedData parsed_data;
 
-    try
-    {
+    try {
         parsed_data = CommandLineParser::Parse(pCmdLine);
-    }
-    catch (ParserException &e)
-    {
+    } catch(ParserException& e) {
         std::wcout << e.what() << "\n";
         return 0;
     }
 
-    ChangeLockscreenDaemon daemon(parsed_data);
-    if (!daemon.create(L"CF Lockscreen image changer"))
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
+        return 0;
+    }
+
+    ChangeLockscreenDaemon daemon{parsed_data};
+    if (!daemon.create(L"CF Lockscreen image changer")) {
         return ErrorChangeLockscreen::build_daemon;
     }
 
