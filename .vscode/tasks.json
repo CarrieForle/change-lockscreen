@@ -84,6 +84,21 @@
                 "kind": "build",
             },
             "detail": "compiler: C:\\Program Files\\mingw64\\bin\\g++.exe"
+        },
+        {
+            "label": "(g++) Build Everything",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "(g++) Build Debug (console)",
+                "(g++) Build Debug (consoleless)",
+                "(g++) Build Release"
+            ],
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build"
+            }
         }
     ]
 }
