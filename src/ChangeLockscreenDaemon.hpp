@@ -1,6 +1,7 @@
 #ifndef CHANGE_LOCKSCREEN_HPP
 #define CHANGE_LOCKSCREEN_HPP
 
+#include "ParsedData.hpp"
 #include "ChangeLockscreenDataBuilder.hpp"
 #include "Log.hpp"
 #include "ChangeLockscreenData.hpp"

@@ -1,18 +1,20 @@
 #ifndef CHANGE_LOCKSCREEN_DATA_HPP
 #define CHANGE_LOCKSCREEN_DATA_HPP
 
+#include <utility>
 #include "ErrorChangeLockscreen.hpp"
-#include <iostream>
-#include <cstdlib>
 #include <filesystem>
 #include <vector>
 #include <random>
 #include <windows.h>
 #include <fstream>
-#include <optional>
 
 struct ChangeLockscreenData
 {
+    ChangeLockscreenData() = default;
+    ChangeLockscreenData(ChangeLockscreenData &) = default;
+    virtual ~ChangeLockscreenData() = default;
+
     ChangeLockscreenData(const std::filesystem::path &last_file,
                          const std::wstring &current_file,
                          const std::filesystem::path &root) : has_locked(false),
@@ -42,13 +44,30 @@ struct ChangeLockscreenData
         }
     }
 
+    friend void swap(ChangeLockscreenData &first, ChangeLockscreenData &second)
+    {
+        using std::swap;
+
+        swap(first.files, second.files);
+        swap(first.random_gen, second.random_gen);
+        swap(first.has_locked, second.has_locked);
+        swap(first.root, second.root);
+        swap(first.last_file, second.last_file);
+        swap(first.ext, second.ext);
+        swap(first.current_file, second.current_file);
+    }
+
+    ChangeLockscreenData(ChangeLockscreenData&& other): ChangeLockscreenData() {
+        swap(*this, other);
+    }
+
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
     bool has_locked;
-    const std::filesystem::path root;
-    const std::filesystem::path last_file;
-    const std::wstring ext;
-    const std::filesystem::path current_file;
+    std::filesystem::path root;
+    std::filesystem::path last_file;
+    std::filesystem::path current_file;
+    std::wstring ext;
 };
 
 #endif
