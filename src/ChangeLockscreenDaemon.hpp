@@ -36,7 +36,7 @@ public:
         return data;
     }
 
-    BaseChangelockscreenDaemon(ParsedData);
+    BaseChangelockscreenDaemon(const ParsedData);
     constexpr HWND windows();
     virtual ~BaseChangelockscreenDaemon();
     Log logger;
@@ -47,7 +47,7 @@ protected:
     virtual void changeLockScreen() {};
     HWND main_hwnd = NULL;
     HMENU tray_menu = CreatePopupMenu();
-    ParsedData commandline_data;
+    const ParsedData commandline_data;
     ChangeLockscreenData data;
 };
 

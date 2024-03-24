@@ -132,7 +132,7 @@ BaseChangelockscreenDaemon<T>::~BaseChangelockscreenDaemon()
 }
 
 template <class DerivedType>
-BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(ParsedData pd) : commandline_data(pd){
+BaseChangelockscreenDaemon<DerivedType>::BaseChangelockscreenDaemon(const ParsedData pd) : commandline_data(pd){
     ChangeLockscreenDataBuilder builder;
 
     if (pd.lockscreen_images_location)

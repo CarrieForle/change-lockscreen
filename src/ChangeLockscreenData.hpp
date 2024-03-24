@@ -8,6 +8,7 @@
 #include <random>
 #include <windows.h>
 #include <fstream>
+#include <iostream>
 
 struct ChangeLockscreenData
 {

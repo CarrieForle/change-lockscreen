@@ -23,7 +23,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
         return 0;
     }
 
+    std::wcout << "rheurihaueruaw\n";
+
     ChangeLockscreenDaemon daemon{parsed_data};
+
+    std::wcout << "lol\n";
+
     if (!daemon.create(L"CF Lockscreen image changer")) {
         return ErrorChangeLockscreen::build_daemon;
     }
