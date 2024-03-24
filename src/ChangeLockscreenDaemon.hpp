@@ -52,6 +52,7 @@ protected:
 class ChangeLockscreenDaemon : public BaseChangelockscreenDaemon<ChangeLockscreenDaemon>
 {
 public:
+    ChangeLockscreenDaemon(const ParsedData pd);
     const wchar_t *className() const;
     LRESULT handleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
     int writeNewShuffle(std::fstream &);

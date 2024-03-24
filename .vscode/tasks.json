@@ -9,13 +9,8 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
-<<<<<<< HEAD
                 "${workspaceFolder}\\src\\ParsedData.cpp",
                 "${workspaceFolder}\\src\\CommandLineParser.cpp",
-=======
-                "${workspaceFolder}\\src\\CommandLineParser.cpp",
-                "${workspaceFolder}\\src\\ParserException.cpp",
->>>>>>> 336424e (WIP parser)
                 "-o",
                 "${workspaceFolder}\\out\\console.exe",
                 "-fdiagnostics-color=always",
@@ -74,15 +69,8 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\ErrorMessageBox.cpp",
                 "${workspaceFolder}\\src\\ChangeLockscreenDataBuilder.cpp",
-<<<<<<< HEAD
                 "${workspaceFolder}\\src\\ParsedData.cpp",
                 "${workspaceFolder}\\src\\CommandLineParser.cpp",
-                "${workspaceFolder}\\src\\ParsedData.cpp",
-                "${workspaceFolder}\\src\\CommandLineParser.cpp",
-=======
-                "${workspaceFolder}\\src\\CommandLineParser.cpp",
-                "${workspaceFolder}\\src\\ParserException.cpp",
->>>>>>> 336424e (WIP parser)
                 "-o",
                 "${workspaceFolder}\\out\\change-lockscreen.exe",
                 "-O3",
@@ -103,24 +91,16 @@
             "detail": "compiler: C:\\Program Files\\mingw64\\bin\\g++.exe"
         },
         {
-<<<<<<< HEAD
             "label": "(g++) Build Everything",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder"
             },
-=======
-            "label": "Build everything",
-            "dependsOrder": "sequence",
->>>>>>> 336424e (WIP parser)
             "dependsOn": [
                 "(g++) Build Debug (console)",
                 "(g++) Build Debug (consoleless)",
                 "(g++) Build Release"
             ],
-<<<<<<< HEAD
             "dependsOrder": "sequence",
-=======
->>>>>>> 336424e (WIP parser)
             "group": {
                 "kind": "build"
             }

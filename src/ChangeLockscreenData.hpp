@@ -42,8 +42,6 @@ struct ChangeLockscreenData
         }
     }
 
-    ChangeLockscreenData(ChangeLockscreenData &) = delete;
-
     std::vector<std::filesystem::path> files;
     std::mt19937 random_gen;
     bool has_locked;
