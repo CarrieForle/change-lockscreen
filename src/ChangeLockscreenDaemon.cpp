@@ -371,7 +371,7 @@ void ChangeLockscreenDaemon::changeLockscreen()
     while (!copyFile(data.files[rolled_number], data.root / data.current_file))
     {
         wchar_t err_msg[256];
-        std::wcscpy(err_msg, std::format(L"Failed to copy next image in the sequence to \"{}\". Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", data.current_file.wstring()).c_str());
+        std::wcscpy(err_msg, std::format(L"Failed to copy {}: \"{}\" in the sequence to \"{}\". Lockscreen is not changed. Click \"Yes\" to retry; \"No\" to terminate the daemon.", rolled_number, data.files[rolled_number].wstring().c_str(), data.current_file.wstring()).c_str());
         logger.log(err_msg);
 
         if (ErrorMessageBox::errorMessageBox(err_msg) == IDNO)
