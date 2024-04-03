@@ -30,13 +30,15 @@ struct ChangeLockscreenData
             tmp.close();
         }
 
+        int i = 0;
+
         for (const auto &entry : std::filesystem::directory_iterator(root))
         {
             const std::filesystem::path file_path = entry.path();
 
             if (file_path != root / this->current_file && file_path.wstring().ends_with(ext))
             {
-                std::wcout << file_path << "\n";
+                std::wcout << "[" << i++ << "]" << file_path << "\n";
                 files.push_back(file_path);
             }
         }

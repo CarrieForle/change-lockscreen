@@ -135,10 +135,11 @@ constexpr HWND BaseChangelockscreenDaemon<T>::windows() { return main_hwnd; }
 
 int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream)
 {
-    std::vector<int> numbers(data.files.size() + 1);
-    numbers.push_back(0);
-    std::iota(numbers.begin() + 1, numbers.end(), 0);
+    std::vector<int> numbers(data.files.size());
+    std::iota(numbers.begin(), numbers.end(), 0);
+    numbers.insert(numbers.begin(), 0);
 
+    std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int, wchar_t>(std::wcout, L"\n"));
     std::shuffle(numbers.begin() + 1, numbers.end(), data.random_gen);
 
     std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int>(out_stream, "\n"));
@@ -314,6 +315,15 @@ void ChangeLockscreenDaemon::changeLockscreen()
             }
             else
             {
+                if (last_number_file.is_open()) {
+                    last_number_file.close();
+                }
+
+                last_number_file.open(last_number_file_path, std::ios::out);
+                last_number_file << backup.rdbuf();
+
+                last_number_file.close();
+
                 PostQuitMessage(ErrorChangeLockscreen::write_last_file_update);
                 return;
             }
