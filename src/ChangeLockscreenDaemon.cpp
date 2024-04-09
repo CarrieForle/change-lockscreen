@@ -139,8 +139,8 @@ int ChangeLockscreenDaemon::writeNewShuffle(std::fstream &out_stream)
     std::iota(numbers.begin(), numbers.end(), 0);
     numbers.insert(numbers.begin(), 0);
 
-    std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int, wchar_t>(std::wcout, L"\n"));
     std::shuffle(numbers.begin() + 1, numbers.end(), data.random_gen);
+    std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int, wchar_t>(std::wcout, L"\n"));
 
     std::copy(numbers.begin(), numbers.end(), std::ostream_iterator<int>(out_stream, "\n"));
 

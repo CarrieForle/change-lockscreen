@@ -16,6 +16,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, wchar_t *pCmdL
         return ErrorChangeLockscreen::build_daemon;
     }
 
+    std::wcout << "Here";
+
     daemon.logger.writeTime(L"[%F %T] Demon Initialized\n");
 
     MSG msg = {};
